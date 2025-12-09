@@ -2,7 +2,7 @@
 
 ## @eliware/openweathermap [![npm version](https://img.shields.io/npm/v/@eliware/openweathermap.svg)](https://www.npmjs.com/package/@eliware/openweathermap)[![license](https://img.shields.io/github/license/eliware/openweathermap.svg)](LICENSE)[![build status](https://github.com/eliware/openweathermap/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/openweathermap/actions)
 
-> A openweathermap for Node.js (Insert Brief Description)
+> A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.
 
 ---
 
@@ -11,13 +11,17 @@
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [ESM Example](#esm-example)
-  - [CommonJS Example](#commonjs-example)
 - [API](#api)
 - [TypeScript](#typescript)
 - [License](#license)
 
 ## Features
+
+- Fetch current weather for any coordinates
+- Fetch 24-hour forecast (3-hour intervals)
+- Fetch sunrise and sunset times (adjusted to local timezone)
+- Fully typed (TypeScript definitions included)
+- Supports dependency injection for fetch and API key (easy to test/mocks)
 
 ## Installation
 
@@ -27,38 +31,72 @@ npm install @eliware/openweathermap
 
 ## Usage
 
-### ESM Example
-
 ```js
-// Example for ESM (module JS) usage
+import { getCurrent, get24hForecast, getSun } from '@eliware/openweathermap';
 
-```
+const lat = 40.7128;
+const lon = -74.0060;
+const apiKey = 'your_api_key_here';
 
-### CommonJS Example
+(async () => {
+  const current = await getCurrent(lat, lon, { apiKey, units: 'F' });
+  console.log('Current:', current);
 
-```js
-// Example for CommonJS usage
+  const forecast = await get24hForecast(lat, lon, { apiKey, units: 'F' });
+  console.log('24h Forecast:', forecast);
 
+  const sun = await getSun(lat, lon, { apiKey, units: 'F' });
+  console.log('Sunrise/Sunset:', sun);
+})();
 ```
 
 ## API
 
-### method1 signature
+### getCurrent(lat, lon, options?)
 
-description
+Fetches current weather for the given latitude and longitude.
 
-### method2 signature
+- `lat` (number): Latitude
+- `lon` (number): Longitude
+- `options` (object):
+  - `apiKey` (string, required): Your OpenWeatherMap API key
+  - `units` (string, optional): 'F' for Fahrenheit, 'C' for Celsius (default 'C')
+  - `fetchImpl` (function, optional): Custom fetch implementation (for testing/mocks)
+- **Returns:** Promise resolving to the current weather object (see OpenWeatherMap docs)
 
-description
+### get24hForecast(lat, lon, options?)
 
-... etc ...
+Fetches the next 24 hours of forecast data (3-hour intervals, up to 8 items).
+
+- Same parameters as `getCurrent`
+- **Returns:** Promise resolving to an array of forecast objects
+
+### getSun(lat, lon, options?)
+
+Fetches sunrise and sunset times for the given coordinates, returning both UTC and local times.
+
+- Same parameters as `getCurrent`
+- **Returns:** Promise resolving to:
+
+  ```js
+  {
+    sunriseUtc: number,    // Sunrise time (UTC, Unix timestamp)
+    sunsetUtc: number,     // Sunset time (UTC, Unix timestamp)
+    sunriseLocal: number,  // Sunrise time (local, Unix timestamp)
+    sunsetLocal: number,   // Sunset time (local, Unix timestamp)
+    offset: number       // Timezone offset in seconds (from UTC)
+  }
+  ```
 
 ## TypeScript
 
-Type definitions are included:
+Type definitions are included and will be picked up automatically. Example:
 
 ```ts
+import { getCurrent, get24hForecast, getSun } from '@eliware/openweathermap';
 
+const weather = await getCurrent(40.7128, -74.0060, { apiKey: 'your_api_key_here' });
+// weather: object (see OpenWeatherMap API docs)
 ```
 
 ## Support
