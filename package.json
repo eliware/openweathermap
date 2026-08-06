@@ -1,59 +1,60 @@
 {
-    "name": "@eliware/openweathermap",
-    "type": "module",
-    "version": "1.1.1",
-    "description": "A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.",
-    "module": "index.mjs",
-    "types": "index.d.ts",
-    "files": [
-        "index.mjs",
-        "index.d.ts",
-        "README.md",
-        "LICENSE"
-    ],
-    "exports": {
-        ".": {
-            "import": "./index.mjs",
-            "types": "./index.d.ts"
-        }
-    },
-    "scripts": {
-        "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/eliware/openweathermap.git"
-    },
-    "keywords": [
-        "openweathermap",
-        "weather",
-        "forecast",
-        "sunrise",
-        "sunset",
-        "nodejs",
-        "esm",
-        "api",
-        "typescript"
-    ],
-    "author": "Eli Sterling, eliware.org <eli@eliware.org>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/eliware/openweathermap/issues"
-    },
-    "homepage": "https://github.com/eliware/openweathermap#readme",
-    "devDependencies": {
-        "jest": "^30.0.4"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "testMatch": [
-            "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/?(*.)+(spec|test).mjs",
-            "**/?(*.)+(spec|test).cjs"
-        ]
-    },
-    "dependencies": {
-        "dotenv": "^17.2.0",
-        "node-fetch": "^3.3.2"
+  "name": "@eliware/openweathermap",
+  "type": "module",
+  "version": "1.1.1",
+  "description": "A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.",
+  "module": "index.mjs",
+  "types": "index.d.ts",
+  "files": [
+    "index.mjs",
+    "index.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "types": "./index.d.ts"
     }
+  },
+  "scripts": {
+    "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent --coverage",
+    "test:gaps": "npm test -- --coverageReporters=text 2>&1 | awk '!/100%/'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliware/openweathermap.git"
+  },
+  "keywords": [
+    "openweathermap",
+    "weather",
+    "forecast",
+    "sunrise",
+    "sunset",
+    "nodejs",
+    "esm",
+    "api",
+    "typescript"
+  ],
+  "author": "Eli Sterling, eliware.org <eli@eliware.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eliware/openweathermap/issues"
+  },
+  "homepage": "https://github.com/eliware/openweathermap#readme",
+  "devDependencies": {
+    "jest": "^30.0.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/?(*.)+(spec|test).[jt]s?(x)",
+      "**/?(*.)+(spec|test).mjs",
+      "**/?(*.)+(spec|test).cjs"
+    ]
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "node-fetch": "^3.3.2"
+  }
 }
