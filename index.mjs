@@ -1,95 +1,54 @@
 import fetch from 'node-fetch';
 
-/**
- * Fetch current weather data from OpenWeatherMap API
- * @param {number} lat
- * @param {number} lon
- * @param {object} [options]
- * @param {string} [options.apiKey=process.env.OWM_API_KEY] - OpenWeatherMap API key
- * @param {string} [options.units='C'] - 'F' for Fahrenheit, 'C' for Celsius, or undefined for default
- * @param {function} [options.fetchImpl=fetch] - fetch implementation
- * @returns {Promise<object|null>} Weather data object
- */
-export async function getCurrent(lat, lon, {
-  apiKey = process.env.OWM_API_KEY,
-  units = 'C',
-  fetchImpl = fetch,
-} = {}) {
-  if (!apiKey) {
-    throw new Error('apiKey is required');
-  }
-  let owmUnits = 'metric';
-  if (units === 'F') owmUnits = 'imperial';
-  if (units === 'C') owmUnits = 'metric';
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${owmUnits}`;
-  try {
-    const res = await fetchImpl(url);
-    if (!res.ok) {
-      throw new Error(`OpenWeatherMap API error: ${res.status} ${res.statusText}`);
-    }
-    return await res.json();
-  } catch (err) {
-    return null;
+export class OpenWeatherMapError extends Error {
+  constructor(message, { status, statusText, cause, url } = {}) {
+    super(message, { cause });
+    this.name = 'OpenWeatherMapError';
+    this.status = status;
+    this.statusText = statusText;
+    this.url = url;
   }
 }
 
-/**
- * Fetch 24-hour forecast from OpenWeatherMap API (3-hour intervals, 8 items)
- * @param {number} lat
- * @param {number} lon
- * @param {object} [options]
- * @param {string} [options.apiKey=process.env.OWM_API_KEY]
- * @param {string} [options.units='C']
- * @param {function} [options.fetchImpl=fetch]
- * @returns {Promise<object[]|null>} Array of forecast objects for next 24h
- */
-export async function get24hForecast(lat, lon, {
-  apiKey = process.env.OWM_API_KEY,
-  units = 'C',
-  fetchImpl = fetch,
-} = {}) {
-  if (!apiKey) {
-    throw new Error('apiKey is required');
+const unitsMap = { C: 'metric', F: 'imperial', K: 'standard', metric: 'metric', imperial: 'imperial', standard: 'standard' };
+function coordinates(lat, lon) {
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90) throw new RangeError('lat must be between -90 and 90');
+  if (!Number.isFinite(lon) || lon < -180 || lon > 180) throw new RangeError('lon must be between -180 and 180');
+}
+function requestOptions(options) {
+  const { apiKey = process.env.OWM_API_KEY, units = 'C', fetchImpl = fetch, timeout = 10_000, retries = 0, now = () => Date.now() / 1000, throwOnError = false } = options ?? {};
+  if (!apiKey) throw new Error('apiKey is required');
+  const owmUnits = unitsMap[units];
+  if (!owmUnits) throw new RangeError('units must be C, F, K, metric, imperial, or standard');
+  return { apiKey, owmUnits, fetchImpl, timeout, retries, now, throwOnError };
+}
+async function request(path, lat, lon, config) {
+  const params = new URLSearchParams({ lat: String(lat), lon: String(lon), appid: config.apiKey, units: config.owmUnits });
+  const url = `https://api.openweathermap.org/data/2.5/${path}?${params}`;
+  let lastError;
+  for (let attempt = 0; attempt <= config.retries; attempt += 1) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), config.timeout);
+    try {
+      const response = await config.fetchImpl(url, { signal: controller.signal });
+      if (!response.ok) throw new OpenWeatherMapError(`OpenWeatherMap API error: ${response.status} ${response.statusText}`, { status: response.status, statusText: response.statusText, url });
+      return await response.json();
+    } catch (error) { lastError = error; } finally { clearTimeout(timer); }
   }
-  let owmUnits = 'metric';
-  if (units === 'F') owmUnits = 'imperial';
-  if (units === 'C') owmUnits = 'metric';
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${owmUnits}`;
-  try {
-    const res = await fetchImpl(url);
-    if (!res.ok) {
-      throw new Error(`OpenWeatherMap API error: ${res.status} ${res.statusText}`);
-    }
-    const data = await res.json();
-    if (!data || !Array.isArray(data.list)) return [];
-    const now = Date.now() / 1000;
-    return data.list.filter(item => item.dt > now && item.dt <= now + 24 * 3600);
-  } catch (err) {
-    return [];
-  }
+  if (config.throwOnError) throw (lastError instanceof OpenWeatherMapError ? lastError : new OpenWeatherMapError(lastError?.message ?? 'OpenWeatherMap request failed', { cause: lastError, url }));
+  return null;
 }
 
-/**
- * Fetch sunrise and sunset times for the given coordinates, returns both UTC and local times
- * @param {number} lat
- * @param {number} lon
- * @param {object} [options]
- * @param {string} [options.apiKey=process.env.OWM_API_KEY]
- * @param {string} [options.units='C']
- * @param {function} [options.fetchImpl=fetch]
- * @returns {Promise<{sunriseUtc: number, sunsetUtc: number, sunriseLocal: number, sunsetLocal: number, offset: number}|null>}
- */
-export async function getSun(lat, lon, options = {}) {
-  const current = await getCurrent(lat, lon, options);
-  if (!current || !current.sys) return null;
-  const offset = current.timezone || 0;
-  const sunriseUtc = current.sys.sunrise;
-  const sunsetUtc = current.sys.sunset;
-  return {
-    sunriseUtc,
-    sunsetUtc,
-    sunriseLocal: sunriseUtc + offset,
-    sunsetLocal: sunsetUtc + offset,
-    offset: offset
-  };
+export async function getCurrent(lat, lon, options) {
+  coordinates(lat, lon); const config = requestOptions(options); return request('weather', lat, lon, config);
+}
+export async function get24hForecast(lat, lon, options) {
+  coordinates(lat, lon); const config = requestOptions(options); const data = await request('forecast', lat, lon, config);
+  if (!data || !Array.isArray(data.list)) return [];
+  const now = config.now(); return data.list.filter(item => item.dt > now && item.dt <= now + 24 * 3600);
+}
+export async function getSun(lat, lon, options) {
+  const current = await getCurrent(lat, lon, options); if (!current?.sys) return null;
+  const offset = current.timezone || 0; const { sunrise, sunset } = current.sys;
+  return { sunriseUtc: sunrise, sunsetUtc: sunset, sunriseLocal: sunrise + offset, sunsetLocal: sunset + offset, offset };
 }

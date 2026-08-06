@@ -9,7 +9,8 @@
         "index.mjs",
         "index.d.ts",
         "README.md",
-        "LICENSE"
+        "LICENSE",
+        "example.mjs"
     ],
     "exports": {
         ".": {
@@ -55,7 +56,6 @@
         ]
     },
     "dependencies": {
-        "dotenv": "^17.4.2",
         "node-fetch": "^3.3.2"
     }
 }

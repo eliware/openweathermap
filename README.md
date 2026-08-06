@@ -21,7 +21,10 @@
 - Fetch 24-hour forecast (3-hour intervals)
 - Fetch sunrise and sunset times (adjusted to local timezone)
 - Fully typed (TypeScript definitions included)
-- Supports dependency injection for fetch and API key (easy to test/mocks)
+- Supports dependency injection for fetch, clock, and API key
+- Validates coordinates and units before requests
+- Configurable timeouts, retries, and structured errors
+- Backward-compatible `null`/`[]` failure results by default
 
 ## Installation
 
@@ -51,6 +54,13 @@ const apiKey = 'your_api_key_here';
 ```
 
 ## API
+
+### Options
+
+All methods accept `apiKey`, `units` (`C`, `F`, `K`, or OpenWeatherMap unit names),
+`fetchImpl`, `timeout`, `retries`, and `now`. Set `throwOnError: true` to throw an
+`OpenWeatherMapError` containing HTTP status and URL metadata; otherwise request
+failures retain the compatibility behavior of returning `null` or `[]`.
 
 ### getCurrent(lat, lon, options?)
 
