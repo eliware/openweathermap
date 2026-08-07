@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 export class OpenWeatherMapError extends Error {
   constructor(message, { status, statusText, cause, url } = {}) {
     super(message, { cause });
@@ -16,7 +14,7 @@ function coordinates(lat, lon) {
   if (!Number.isFinite(lon) || lon < -180 || lon > 180) throw new RangeError('lon must be between -180 and 180');
 }
 function requestOptions(options) {
-  const { apiKey = process.env.OWM_API_KEY, units = 'C', fetchImpl = fetch, timeout = 10_000, retries = 0, now = () => Date.now() / 1000, throwOnError = false } = options ?? {};
+  const { apiKey = process.env.OWM_API_KEY, units = 'C', fetchImpl = globalThis.fetch, timeout = 10_000, retries = 0, now = () => Date.now() / 1000, throwOnError = false } = options ?? {};
   if (!apiKey) throw new Error('apiKey is required');
   const owmUnits = unitsMap[units];
   if (!owmUnits) throw new RangeError('units must be C, F, K, metric, imperial, or standard');

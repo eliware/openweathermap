@@ -1,4 +1,4 @@
-import { getCurrent, get24hForecast, getSun } from './index.mjs';
+import { getCurrent, get24hForecast, getSun } from '../index.mjs';
 import { jest, test, expect } from '@jest/globals';
 
 const lat = 40.7128;
@@ -112,7 +112,7 @@ test('throws structured errors when requested and supports retries', async () =>
 });
 
 test('exposes OpenWeatherMapError metadata', async () => {
-  const { OpenWeatherMapError } = await import('./index.mjs');
+  const { OpenWeatherMapError } = await import('../index.mjs');
   const error = new OpenWeatherMapError('failure');
   const detailed = new OpenWeatherMapError('failure', { status: 500, statusText: 'Oops', url: 'https://example.test' });
   expect(error).toMatchObject({ name: 'OpenWeatherMapError' });
