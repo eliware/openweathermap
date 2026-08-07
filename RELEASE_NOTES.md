@@ -1,5 +1,13 @@
 # Release Notes
 
+## 1.1.6 — August 7, 2026
+
+- Aligned repository structure, package metadata, validation scripts, CI, documentation, and package contents with Eliware library conventions.
+- Added TypeScript declaration checking and standardized package dry-run validation.
+- Moved tests and examples into convention-compliant directories.
+- Removed the unnecessary `node-fetch` runtime dependency in favor of Node.js 26 native `fetch`.
+- Verification: tests, 100% coverage, gap checks, lint, typecheck, pack, smoke test, and production audit pass.
+
 ## 1.1.5
 
 - Corrected coverage-gap filtering so fully covered files are excluded reliably.
