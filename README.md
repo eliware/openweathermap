@@ -26,6 +26,11 @@
 - Configurable timeouts, retries, and structured errors
 - Backward-compatible `null`/`[]` failure results by default
 
+## Requirements
+
+- Node.js 26 or newer
+- An OpenWeatherMap API key
+
 ## Installation
 
 ```bash
@@ -97,6 +102,24 @@ Fetches sunrise and sunset times for the given coordinates, returning both UTC a
     offset: number       // Timezone offset in seconds (from UTC)
   }
   ```
+
+## Errors / Troubleshooting
+
+Coordinates and units are validated before requests. By default, request failures return `null` or `[]` for compatibility. Set `throwOnError: true` to receive `OpenWeatherMapError` with status and URL metadata. Configure `timeout` and `retries` for unreliable networks.
+
+## Development
+
+```bash
+npm test
+npm run test:gaps
+npm run lint
+npm run typecheck
+npm run pack
+```
+
+## Security
+
+Treat OpenWeatherMap API keys as secrets. Use `OWM_API_KEY` or a secret manager; never commit `.env` files, keys, or credential-bearing URLs.
 
 ## TypeScript
 
