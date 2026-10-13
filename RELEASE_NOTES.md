@@ -28,6 +28,8 @@ This release ends a request when its timeout expires, including during response 
 
 This release returns no sun data when the response has no numeric sunrise or sunset values. It keeps the default failure results as `null` or an empty array.
 
+This release removes the API key from public error URLs. It redacts the key from error messages and causes.
+
 ## 1.1.6 — 2026-08-07
 
 ### Changed

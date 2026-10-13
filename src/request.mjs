@@ -39,5 +39,5 @@ export async function request(path, lat, lon, config) {
       clearTimeout(timer);
     }
   }
-  return requestFailure(lastError, config.throwOnError, url);
+  return requestFailure(lastError, config.throwOnError, url, config.apiKey);
 }

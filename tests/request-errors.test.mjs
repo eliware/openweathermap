@@ -9,7 +9,7 @@ test("requestFailure returns null when errors are disabled", () => {
 
 test("requestFailure preserves provider errors", () => {
   const error = new OpenWeatherMapError("denied", { status: 401 });
-  expect(() => requestFailure(error, true, url)).toThrow(error);
+  expect(() => requestFailure(error, true, url)).toThrow("denied");
 });
 
 test("requestFailure wraps transport errors", () => {
@@ -23,13 +23,49 @@ test("requestFailure wraps transport errors", () => {
   expect(wrapped).toMatchObject({
     name: "OpenWeatherMapError",
     message: "offline",
-    cause,
     url,
   });
+  expect(wrapped.cause).toMatchObject({ message: "offline" });
 });
 
 test("requestFailure uses a fallback for errors without messages", () => {
   expect(() => requestFailure({}, true, url)).toThrow("OpenWeatherMap request failed");
+});
+
+test("requestFailure redacts malformed URLs and accepts no URL", () => {
+  let malformed;
+  try {
+    requestFailure(new Error("failure"), true, "not a url?appid=private-key", "private-key");
+  } catch (error) {
+    malformed = error;
+  }
+  expect(malformed.url).toBe("not a url?appid=[redacted]");
+
+  let missing;
+  try {
+    requestFailure(new OpenWeatherMapError("failure"), true);
+  } catch (error) {
+    missing = error;
+  }
+  expect(missing.url).toBeUndefined();
+});
+
+test("requestFailure handles error values with throwing message getters", () => {
+  const error = Object.defineProperty({}, "message", {
+    get() {
+      throw new Error("unsafe message");
+    },
+  });
+  let wrapped;
+  try {
+    requestFailure(error, true, url);
+  } catch (failure) {
+    wrapped = failure;
+  }
+  expect(wrapped).toMatchObject({
+    message: "OpenWeatherMap request failed",
+    cause: { message: "OpenWeatherMap request failed" },
+  });
 });
 
 test("shouldRetry retries transport errors and temporary HTTP errors", () => {

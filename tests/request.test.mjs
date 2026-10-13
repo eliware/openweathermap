@@ -5,6 +5,30 @@ function config(fetchImpl, options = {}) {
   return requestOptions({ apiKey: "test", fetchImpl, ...options });
 }
 
+async function captureError(promise) {
+  try {
+    await promise;
+  } catch (error) {
+    return error;
+  }
+  throw new Error("Expected request to fail");
+}
+
+function expectNoApiKey(error, apiKey) {
+  const text = [
+    error.name,
+    error.message,
+    error.statusText,
+    error.url,
+    error.cause?.message,
+    error.stack,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  expect(text).not.toContain(apiKey);
+  expect(error.url).not.toMatch(/[?&]appid=/i);
+}
+
 test("request sends coordinates and returns JSON", async () => {
   let sentUrl;
   const fetchImpl = async (url) => {
@@ -50,6 +74,25 @@ test("request does not retry permanent HTTP errors", async () => {
   expect(attempts).toBe(1);
 });
 
+test("HTTP errors omit the API key from public details", async () => {
+  const apiKey = "private-key-123";
+  const fetchImpl = async () => ({
+    ok: false,
+    status: 401,
+    statusText: `Denied ${apiKey}`,
+    json: async () => ({}),
+  });
+  const error = await captureError(
+    request("weather", 1, 2, config(fetchImpl, { apiKey, throwOnError: true })),
+  );
+  expect(error).toMatchObject({ name: "OpenWeatherMapError", status: 401 });
+  expect(error.url).toBe(
+    "https://api.openweathermap.org/data/2.5/weather?lat=1&lon=2&units=metric",
+  );
+  expect(error.statusText).toBe("Denied [redacted]");
+  expectNoApiKey(error, apiKey);
+});
+
 test("request wraps transport errors and uses a fallback message", async () => {
   const offline = async () => {
     throw new Error("offline");
@@ -63,6 +106,19 @@ test("request wraps transport errors and uses a fallback message", async () => {
   await expect(request("weather", 1, 2, config(unknown, { throwOnError: true }))).rejects.toThrow(
     "OpenWeatherMap request failed",
   );
+});
+
+test("transport errors redact API keys from messages and causes", async () => {
+  const apiKey = "private-key-456";
+  const fetchImpl = async (url) => {
+    throw new Error(`Failed at ${url} with ${apiKey}`);
+  };
+  const error = await captureError(
+    request("weather", 1, 2, config(fetchImpl, { apiKey, throwOnError: true })),
+  );
+  expect(error.message).toContain("[redacted]");
+  expect(error.cause.message).toContain("[redacted]");
+  expectNoApiKey(error, apiKey);
 });
 
 test("request returns null when JSON parsing fails", async () => {
