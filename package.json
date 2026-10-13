@@ -1,79 +1,111 @@
 {
-    "name": "@eliware/openweathermap",
-    "type": "module",
-    "version": "1.1.6",
-    "description": "A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.",
-    "types": "index.d.ts",
-    "files": [
-        "index.mjs",
-        "index.d.ts",
-        "README.md",
-        "LICENSE",
-        "examples"
+  "name": "@eliware/openweathermap",
+  "version": "12.0.0",
+  "type": "module",
+  "description": "A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.",
+  "keywords": [
+    "openweathermap",
+    "weather",
+    "forecast",
+    "sunrise",
+    "sunset",
+    "nodejs",
+    "esm",
+    "api",
+    "typescript"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "main": "./src/index.mjs",
+  "files": [
+    "src/",
+    "docs/",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE",
+    "RELEASE_NOTES.md",
+    "examples/",
+    "specs/",
+    ".env.example"
+  ],
+  "scripts": {
+    "test": "eliware-test",
+    "lint": "eliware-test --lint",
+    "audit": "eliware-test --audit",
+    "format": "eliware-test --format",
+    "format:check": "eliware-test --format-check",
+    "typecheck": "tsc --project tsconfig.json",
+    "pack": "eliware-test --pack"
+  },
+  "engines": {
+    "node": ">=26"
+  },
+  "devDependencies": {
+    "@eliware/test": "^12.0.0",
+    "typescript": "^7.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.mjs"
     ],
-    "exports": {
-        ".": {
-            "import": "./index.mjs",
-            "types": "./index.d.ts"
-        }
-    },
-    "scripts": {
-        "test": "npx --node-options=\"--experimental-vm-modules --no-warnings\" jest --detectOpenHandles --silent --coverage",
-        "test:gaps": "npm test 2>&1 | grep '|' | grep -vF '|     100 |      100 |     100 |     100 |'",
-        "lint": "npx oxlint .",
-        "typecheck": "tsc --project tsconfig.json",
-        "pack": "npm pack --dry-run"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/eliware/openweathermap.git"
-    },
-    "keywords": [
-        "openweathermap",
-        "weather",
-        "forecast",
-        "sunrise",
-        "sunset",
-        "nodejs",
-        "esm",
-        "api",
-        "typescript"
+    "collectCoverageFrom": [
+      "src/**/*.mjs"
     ],
-    "author": "Eli Sterling, eliware.org <eli@eliware.org>",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/eliware/openweathermap/issues"
-    },
-    "homepage": "https://github.com/eliware/openweathermap#readme",
-    "devDependencies": {
-        "jest": "^30.4.2",
-        "typescript": "^7.0.2"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "testMatch": [
-            "**/?(*.)+(spec|test).[jt]s?(x)",
-            "**/?(*.)+(spec|test).mjs",
-            "**/?(*.)+(spec|test).cjs"
-        ]
-    },
-    "prettier": {
-      "printWidth": 100,
-      "tabWidth": 2,
-      "useTabs": false,
-      "semi": true,
-      "singleQuote": false,
-      "quoteProps": "as-needed",
-      "jsxSingleQuote": false,
-      "trailingComma": "all",
-      "bracketSpacing": true,
-      "bracketSameLine": false,
-      "arrowParens": "always",
-      "proseWrap": "preserve",
-      "endOfLine": "lf"
-    },
-    "eliware": {
-      "id": "E-250",
-      "apply": ["general", "library", "npm-published"]
+    "coverageReporters": [
+      "text",
+      "json-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
     }
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "bracketSameLine": false,
+    "arrowParens": "always",
+    "proseWrap": "preserve",
+    "endOfLine": "lf"
+  },
+  "author": "Eliware <eliware@eliware.org>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliware/openweathermap.git"
+  },
+  "homepage": "https://github.com/eliware/openweathermap#readme",
+  "bugs": {
+    "url": "https://github.com/eliware/openweathermap/issues"
+  },
+  "eliware": {
+    "id": "E-230",
+    "apply": [
+      "general",
+      "library",
+      "npm-published"
+    ]
+  },
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.mjs"
+    }
+  }
 }

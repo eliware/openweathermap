@@ -1,6 +1,9 @@
 # Examples
 
-- [Basic example](basic.mjs)
+The example needs Node.js 26 and an OpenWeatherMap API key. Set `OWM_API_KEY` before you run it.
 
-This directory contains runnable weather-client examples. Each example must
-document API-key prerequisites, command, expected result, and cleanup.
+Install the package with `npm install`. Run `node examples/example.mjs` from the repository root.
+
+Expected result: The program prints current weather, forecast entries, and sun times.
+
+- [ESM example](example.mjs)

@@ -1,0 +1,18 @@
+version: "12.0"
+description: Defines requirements for the OpenWeatherMap client.
+directives:
+  - id: E-230.0
+    dos:
+      - Keep the public API and TypeScript declarations aligned.
+      - Preserve coordinate and unit validation.
+      - Keep request failures compatible with the documented return values.
+      - Keep API keys out of package output and source control.
+    donts:
+      - Do not publish or deploy during validation.
+    children:
+      - id: E-230.0.0
+        dos:
+          - Validate current weather, forecast, and sun data behavior.
+          - Keep timeout and retry options available.
+        donts:
+          - Do not bypass input validation.

@@ -1,0 +1,6 @@
+version: "12.0"
+description: Lists repository requirements.
+requirements:
+  runtime: Node.js 26 or later with native ESM.
+  package: Publish only consumer files listed in package.json.
+  validation: Run npm test before commit.

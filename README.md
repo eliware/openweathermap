@@ -1,138 +1,94 @@
 # [![eliware.org](https://eliware.org/logos/brand.png)](https://discord.gg/M6aTR9eTwN)
 
-## @eliware/openweathermap [![npm version](https://img.shields.io/npm/v/@eliware/openweathermap.svg)](https://www.npmjs.com/package/@eliware/openweathermap)[![license](https://img.shields.io/github/license/eliware/openweathermap.svg)](LICENSE)[![build status](https://github.com/eliware/openweathermap/actions/workflows/nodejs.yml/badge.svg)](https://github.com/eliware/openweathermap/actions)
+## @eliware/openweathermap [![npm](https://img.shields.io/npm/v/@eliware/openweathermap)](https://www.npmjs.com/package/@eliware/openweathermap) [![License](https://img.shields.io/github/license/eliware/openweathermap)](https://github.com/eliware/openweathermap/blob/main/LICENSE) [![CI](https://github.com/eliware/openweathermap/actions/workflows/ci.yaml/badge.svg)](https://github.com/eliware/openweathermap/actions/workflows/ci.yaml)
 
-Documentation: [docs](docs/README.md) · [specifications](specs/README.md) · [examples](examples/README.md)
-
-> A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.
-
----
+A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.
 
 ## Table of Contents
 
 - [Features](#features)
-- [Installation](#installation)
+- [Requirements](#requirements)
+- [Setup](#setup)
 - [Usage](#usage)
+- [Development](#development)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [Security](#security)
 - [API](#api)
-- [TypeScript](#typescript)
+- [Packaging](#packaging)
+- [Examples](#examples)
+- [Support](#support)
+- [Links](#links)
 - [License](#license)
 
 ## Features
 
-- Fetch current weather for any coordinates
-- Fetch 24-hour forecast (3-hour intervals)
-- Fetch sunrise and sunset times (adjusted to local timezone)
-- Fully typed (TypeScript definitions included)
-- Supports dependency injection for fetch, clock, and API key
-- Validates coordinates and units before requests
-- Configurable timeouts, retries, and structured errors
-- Backward-compatible `null`/`[]` failure results by default
+- Get current weather for latitude and longitude.
+- Get forecast data for the next 24 hours.
+- Get sunrise and sunset times in UTC and local time.
+- Set units, timeouts, retries, and error handling.
 
 ## Requirements
 
-- Node.js 26 or newer
-- An OpenWeatherMap API key
+- Node.js 26 or newer.
+- An OpenWeatherMap API key.
 
-## Installation
+## Setup
 
-```bash
+Install the package:
+
+```sh
 npm install @eliware/openweathermap
 ```
 
+Set `OWM_API_KEY`, or pass `apiKey` in the options object.
+
 ## Usage
 
+Read the [release notes](RELEASE_NOTES.md) for version changes.
+
 ```js
-import { getCurrent, get24hForecast, getSun } from '@eliware/openweathermap';
+import { getCurrent, get24hForecast, getSun } from "@eliware/openweathermap";
 
-const lat = 40.7128;
-const lon = -74.0060;
-const apiKey = 'your_api_key_here';
-
-(async () => {
-  const current = await getCurrent(lat, lon, { apiKey, units: 'F' });
-  console.log('Current:', current);
-
-  const forecast = await get24hForecast(lat, lon, { apiKey, units: 'F' });
-  console.log('24h Forecast:', forecast);
-
-  const sun = await getSun(lat, lon, { apiKey, units: 'F' });
-  console.log('Sunrise/Sunset:', sun);
-})();
+const options = { apiKey: process.env.OWM_API_KEY, units: "F" };
+const current = await getCurrent(40.7128, -74.006, options);
+const forecast = await get24hForecast(40.7128, -74.006, options);
+const sun = await getSun(40.7128, -74.006, options);
 ```
-
-## API
-
-### Options
-
-All methods accept `apiKey`, `units` (`C`, `F`, `K`, or OpenWeatherMap unit names),
-`fetchImpl`, `timeout`, `retries`, and `now`. Set `throwOnError: true` to throw an
-`OpenWeatherMapError` containing HTTP status and URL metadata; otherwise request
-failures retain the compatibility behavior of returning `null` or `[]`.
-
-### getCurrent(lat, lon, options?)
-
-Fetches current weather for the given latitude and longitude.
-
-- `lat` (number): Latitude
-- `lon` (number): Longitude
-- `options` (object):
-  - `apiKey` (string, required): Your OpenWeatherMap API key
-  - `units` (string, optional): 'F' for Fahrenheit, 'C' for Celsius (default 'C')
-  - `fetchImpl` (function, optional): Custom fetch implementation (for testing/mocks)
-- **Returns:** Promise resolving to the current weather object (see OpenWeatherMap docs)
-
-### get24hForecast(lat, lon, options?)
-
-Fetches the next 24 hours of forecast data (3-hour intervals, up to 8 items).
-
-- Same parameters as `getCurrent`
-- **Returns:** Promise resolving to an array of forecast objects
-
-### getSun(lat, lon, options?)
-
-Fetches sunrise and sunset times for the given coordinates, returning both UTC and local times.
-
-- Same parameters as `getCurrent`
-- **Returns:** Promise resolving to:
-
-  ```js
-  {
-    sunriseUtc: number,    // Sunrise time (UTC, Unix timestamp)
-    sunsetUtc: number,     // Sunset time (UTC, Unix timestamp)
-    sunriseLocal: number,  // Sunrise time (local, Unix timestamp)
-    sunsetLocal: number,   // Sunset time (local, Unix timestamp)
-    offset: number       // Timezone offset in seconds (from UTC)
-  }
-  ```
-
-## Errors / Troubleshooting
-
-Coordinates and units are validated before requests. By default, request failures return `null` or `[]` for compatibility. Set `throwOnError: true` to receive `OpenWeatherMapError` with status and URL metadata. Configure `timeout` and `retries` for unreliable networks.
 
 ## Development
 
-```bash
-npm test
-npm run test:gaps
-npm run lint
-npm run typecheck
-npm run pack
-```
+Use Node.js 26 or newer. Use native ESM. Read [AGENTS.md](AGENTS.md) before you change this repository.
+
+## Testing
+
+Run `npm test` to run repository validation. Run `npm run typecheck` to check TypeScript declarations.
+
+## Troubleshooting
+
+Check the API key, coordinates, and unit value. Set `throwOnError: true` to get an `OpenWeatherMapError` with status and URL data.
 
 ## Security
 
-Treat OpenWeatherMap API keys as secrets. Use `OWM_API_KEY` or a secret manager; never commit `.env` files, keys, or credential-bearing URLs.
+Keep API keys out of source control. Use environment settings or a secret manager. Do not put API keys in URLs or logs.
 
-## TypeScript
+## API
 
-Type definitions are included and will be picked up automatically. Example:
+`getCurrent(lat, lon, options)` returns current weather or `null` after a request failure. `get24hForecast(lat, lon, options)` returns matching forecast entries or an empty array.
 
-```ts
-import { getCurrent, get24hForecast, getSun } from '@eliware/openweathermap';
+`getSun(lat, lon, options)` returns sunrise and sunset timestamps in UTC and local time, or `null` if weather data lacks sun fields.
 
-const weather = await getCurrent(40.7128, -74.0060, { apiKey: 'your_api_key_here' });
-// weather: object (see OpenWeatherMap API docs)
-```
+Options support `apiKey`, `units` (`C`, `F`, `K`, `metric`, `imperial`, or `standard`), `fetchImpl`, `timeout`, `retries`, `now`, and `throwOnError`. Coordinates and units are checked before requests.
+
+## Packaging
+
+The package exports `src/index.mjs` and its TypeScript declarations. The npm package includes `src/`, `docs/`, `examples/`, and `specs/`. It excludes tests and workflow files.
+
+Run `npm run pack` to check package contents. Validation does not approve a release. Follow the Eliware Operations process before publication.
+
+## Examples
+
+Read the [example index](examples/README.md) for runnable ESM examples. Read the [documentation index](docs/README.md) for user guides. Read the [specifications index](specs/README.md) for repository requirements.
 
 ## Support
 
@@ -142,13 +98,15 @@ For help, questions, or to chat with the author and community, visit:
 
 **[eliware.org on Discord](https://discord.gg/M6aTR9eTwN)**
 
-## License
-
-[MIT © 2025 Eli Sterling, eliware.org](LICENSE)
-
 ## Links
 
 - [Home Page](https://eliware.org)
-- [GitHub](https://github.com/eliware/openweathermap)
+- [GitHub Org](https://github.com/eliware)
+- [GitHub Repo](https://github.com/eliware/openweathermap)
+- [Bug Reports](https://github.com/eliware/openweathermap/issues)
 - [npm](https://www.npmjs.com/package/@eliware/openweathermap)
 - [Discord](https://discord.gg/M6aTR9eTwN)
+
+## License
+
+[MIT © Eliware](LICENSE)
