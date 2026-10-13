@@ -18,15 +18,15 @@ The method rejects with `RangeError` when coordinates are outside these limits o
 
 ## Options
 
-| Option         | Type     | Default              | Description                                         |
-| -------------- | -------- | -------------------- | --------------------------------------------------- |
-| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                             |
-| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`. |
-| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                     |
-| `timeout`      | number   | `10000`              | Request timeout in milliseconds.                    |
-| `retries`      | number   | `0`                  | Extra request attempts after the first attempt.     |
-| `now`          | function | Unix time in seconds | Clock for forecast filtering.                       |
-| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.  |
+| Option         | Type     | Default              | Description                                                     |
+| -------------- | -------- | -------------------- | --------------------------------------------------------------- |
+| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                                         |
+| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`.             |
+| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                                 |
+| `timeout`      | number   | `10000`              | Finite timeout in milliseconds. Zero sets an immediate timeout. |
+| `retries`      | number   | `0`                  | Non-negative integer count of extra request attempts.           |
+| `now`          | function | Unix time in seconds | Clock for forecast filtering.                                   |
+| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.              |
 
 `C` maps to `metric`. `F` maps to `imperial`. `K` maps to `standard`. The three provider unit names map to themselves.
 

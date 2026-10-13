@@ -36,3 +36,22 @@ test("requestOptions applies defaults and maps unit names", () => {
 test("requestOptions rejects unsupported units", () => {
   expect(() => requestOptions({ apiKey: "test", units: "invalid" })).toThrow("units");
 });
+
+test("requestOptions accepts zero timeout and retry values", () => {
+  expect(requestOptions({ apiKey: "test", timeout: 0, retries: 0 })).toMatchObject({
+    timeout: 0,
+    retries: 0,
+  });
+});
+
+test("requestOptions rejects invalid timeout values", () => {
+  for (const timeout of [Number.NaN, Number.POSITIVE_INFINITY, -1, "100"]) {
+    expect(() => requestOptions({ apiKey: "test", timeout })).toThrow("timeout");
+  }
+});
+
+test("requestOptions rejects invalid retry values", () => {
+  for (const retries of [Number.NaN, -1, 1.5, "1"]) {
+    expect(() => requestOptions({ apiKey: "test", retries })).toThrow("retries");
+  }
+});

@@ -14,6 +14,8 @@ This release replaces the old workflow with shared CI and npm publish workflows.
 
 This release changes coordinate errors to `lat must be in range` and `lon must be in range`.
 
+This release validates timeouts as finite non-negative numbers. It validates retry counts as non-negative integers.
+
 This release updates the MIT copyright and adds shared ignore rules.
 
 This release adds user docs for setup, API inputs, options, results, errors, and troubleshooting. It updates the README, contributor rules, examples, indexes, and specifications.
