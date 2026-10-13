@@ -18,6 +18,8 @@ This release validates timeouts as finite non-negative numbers. It validates ret
 
 This release ends a request when its timeout expires. It skips retries for permanent HTTP errors. It returns no sun data when sunrise or sunset data is missing.
 
+This release applies timeouts to response parsing. It skips retries when a successful response has invalid JSON. It rejects an unavailable fetch function.
+
 This release updates the MIT copyright and adds shared ignore rules.
 
 This release adds user docs for setup, API inputs, options, results, errors, and troubleshooting. It updates the README, contributor rules, examples, indexes, and specifications.

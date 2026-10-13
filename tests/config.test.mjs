@@ -55,3 +55,14 @@ test("requestOptions rejects invalid retry values", () => {
     expect(() => requestOptions({ apiKey: "test", retries })).toThrow("retries");
   }
 });
+
+test("requestOptions rejects an unavailable fetch function", () => {
+  expect(() => requestOptions({ apiKey: "test", fetchImpl: null })).toThrow("fetchImpl");
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = undefined;
+  try {
+    expect(() => requestOptions({ apiKey: "test" })).toThrow("fetchImpl");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

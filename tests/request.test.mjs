@@ -66,13 +66,18 @@ test("request wraps transport errors and uses a fallback message", async () => {
 });
 
 test("request returns null when JSON parsing fails", async () => {
-  const fetchImpl = async () => ({
-    ok: true,
-    json: async () => {
-      throw new Error("bad json");
-    },
-  });
-  await expect(request("weather", 1, 2, config(fetchImpl))).resolves.toBeNull();
+  let attempts = 0;
+  const fetchImpl = async () => {
+    attempts += 1;
+    return {
+      ok: true,
+      json: async () => {
+        throw new Error("bad json");
+      },
+    };
+  };
+  await expect(request("weather", 1, 2, config(fetchImpl, { retries: 2 }))).resolves.toBeNull();
+  expect(attempts).toBe(1);
 });
 
 test("request aborts timed out requests", async () => {
@@ -85,5 +90,10 @@ test("request aborts timed out requests", async () => {
 
 test("request ends when fetch ignores the abort signal", async () => {
   const fetchImpl = async () => new Promise(() => {});
+  await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 10 }))).resolves.toBeNull();
+});
+
+test("request timeout covers JSON parsing", async () => {
+  const fetchImpl = async () => ({ ok: true, json: async () => new Promise(() => {}) });
   await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 10 }))).resolves.toBeNull();
 });
