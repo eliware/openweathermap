@@ -1,5 +1,5 @@
 import { OpenWeatherMapError } from "../src/errors.mjs";
-import { requestFailure } from "../src/request-errors.mjs";
+import { requestFailure, shouldRetry } from "../src/request-errors.mjs";
 
 const url = "https://example.test/weather";
 
@@ -30,4 +30,15 @@ test("requestFailure wraps transport errors", () => {
 
 test("requestFailure uses a fallback for errors without messages", () => {
   expect(() => requestFailure({}, true, url)).toThrow("OpenWeatherMap request failed");
+});
+
+test("shouldRetry retries transport errors and temporary HTTP errors", () => {
+  expect(shouldRetry(new Error("offline"))).toBe(true);
+  expect(shouldRetry(new OpenWeatherMapError("timeout", { status: 408 }))).toBe(true);
+  expect(shouldRetry(new OpenWeatherMapError("limited", { status: 429 }))).toBe(true);
+  expect(shouldRetry(new OpenWeatherMapError("server", { status: 503 }))).toBe(true);
+});
+
+test("shouldRetry skips permanent HTTP errors", () => {
+  expect(shouldRetry(new OpenWeatherMapError("denied", { status: 401 }))).toBe(false);
 });

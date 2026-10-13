@@ -1,5 +1,5 @@
 import { OpenWeatherMapError } from "./errors.mjs";
-import { requestFailure } from "./request-errors.mjs";
+import { requestFailure, shouldRetry } from "./request-errors.mjs";
 import { requestUrl } from "./request-url.mjs";
 
 export async function request(path, lat, lon, config) {
@@ -7,9 +7,18 @@ export async function request(path, lat, lon, config) {
   let lastError;
   for (let attempt = 0; attempt <= config.retries; attempt += 1) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), config.timeout);
+    let timer;
+    const timeout = new Promise((resolve, reject) => {
+      timer = setTimeout(() => {
+        controller.abort();
+        reject(new Error("OpenWeatherMap request timed out"));
+      }, config.timeout);
+    });
     try {
-      const response = await config.fetchImpl(url, { signal: controller.signal });
+      const response = await Promise.race([
+        config.fetchImpl(url, { signal: controller.signal }),
+        timeout,
+      ]);
       if (!response.ok)
         throw new OpenWeatherMapError(
           `OpenWeatherMap API error: ${response.status} ${response.statusText}`,
@@ -18,6 +27,7 @@ export async function request(path, lat, lon, config) {
       return await response.json();
     } catch (error) {
       lastError = error;
+      if (!shouldRetry(error)) break;
     } finally {
       clearTimeout(timer);
     }

@@ -18,17 +18,19 @@ The method rejects with `RangeError` when coordinates are outside these limits o
 
 ## Options
 
-| Option         | Type     | Default              | Description                                                     |
-| -------------- | -------- | -------------------- | --------------------------------------------------------------- |
-| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                                         |
-| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`.             |
-| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                                 |
-| `timeout`      | number   | `10000`              | Finite timeout in milliseconds. Zero sets an immediate timeout. |
-| `retries`      | number   | `0`                  | Non-negative integer count of extra request attempts.           |
-| `now`          | function | Unix time in seconds | Clock for forecast filtering.                                   |
-| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.              |
+| Option         | Type     | Default              | Description                                                                                |
+| -------------- | -------- | -------------------- | ------------------------------------------------------------------------------------------ |
+| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                                                                    |
+| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`.                                        |
+| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                                                            |
+| `timeout`      | number   | `10000`              | Maximum request time in milliseconds. Zero schedules timeout for the next event-loop turn. |
+| `retries`      | number   | `0`                  | Non-negative integer count of extra attempts.                                              |
+| `now`          | function | Unix time in seconds | Clock for forecast filtering.                                                              |
+| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.                                         |
 
 `C` maps to `metric`. `F` maps to `imperial`. `K` maps to `standard`. The three provider unit names map to themselves.
+
+Retries apply to transport errors and HTTP 408, 429, and 5xx responses. The client does not retry other HTTP errors.
 
 The package reads `OWM_API_KEY` when `apiKey` is not set. The package does not load `.env` files.
 
@@ -50,7 +52,7 @@ The package reads `OWM_API_KEY` when `apiKey` is not set. The package does not l
 - `sunsetLocal`: sunset timestamp plus the provider's time-zone offset.
 - `offset`: time-zone offset in seconds from UTC.
 
-The method returns `null` when the request fails or the response has no `sys` object. It uses an offset of zero when the response has no offset.
+The method returns `null` when the request fails or the response has no `sys`, `sunrise`, or `sunset` value. It uses an offset of zero when the response has no offset.
 
 ## Errors
 

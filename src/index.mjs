@@ -23,6 +23,7 @@ export async function getSun(lat, lon, options) {
   if (!current?.sys) return null;
   const offset = current.timezone || 0;
   const { sunrise, sunset } = current.sys;
+  if (!Number.isFinite(sunrise) || !Number.isFinite(sunset)) return null;
   return {
     sunriseUtc: sunrise,
     sunsetUtc: sunset,

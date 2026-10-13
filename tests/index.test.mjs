@@ -88,3 +88,10 @@ test("public methods return fallback results for incomplete service data", async
   await expect(get24hForecast(lat, lon, { apiKey, fetchImpl })).resolves.toEqual([]);
   await expect(getSun(lat, lon, { apiKey, fetchImpl })).resolves.toBeNull();
 });
+
+test("getSun returns null when sunrise or sunset is missing", async () => {
+  for (const sys of [{ sunset: 2 }, { sunrise: 1 }]) {
+    const fetchImpl = async () => ({ ok: true, json: async () => ({ sys }) });
+    await expect(getSun(lat, lon, { apiKey, fetchImpl })).resolves.toBeNull();
+  }
+});

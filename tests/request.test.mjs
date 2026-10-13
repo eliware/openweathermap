@@ -38,6 +38,18 @@ test("request retries and throws structured API errors", async () => {
   expect(attempts).toBe(2);
 });
 
+test("request does not retry permanent HTTP errors", async () => {
+  let attempts = 0;
+  const fetchImpl = async () => {
+    attempts += 1;
+    return { ok: false, status: 401, statusText: "Unauthorized", json: async () => ({}) };
+  };
+  await expect(
+    request("weather", 1, 2, config(fetchImpl, { retries: 3, throwOnError: true })),
+  ).rejects.toMatchObject({ name: "OpenWeatherMapError", status: 401 });
+  expect(attempts).toBe(1);
+});
+
 test("request wraps transport errors and uses a fallback message", async () => {
   const offline = async () => {
     throw new Error("offline");
@@ -68,5 +80,10 @@ test("request aborts timed out requests", async () => {
     new Promise((resolve, reject) => {
       signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
     });
+  await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 10 }))).resolves.toBeNull();
+});
+
+test("request ends when fetch ignores the abort signal", async () => {
+  const fetchImpl = async () => new Promise(() => {});
   await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 10 }))).resolves.toBeNull();
 });

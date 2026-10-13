@@ -16,6 +16,8 @@ This release changes coordinate errors to `lat must be in range` and `lon must b
 
 This release validates timeouts as finite non-negative numbers. It validates retry counts as non-negative integers.
 
+This release ends a request when its timeout expires. It skips retries for permanent HTTP errors. It returns no sun data when sunrise or sunset data is missing.
+
 This release updates the MIT copyright and adds shared ignore rules.
 
 This release adds user docs for setup, API inputs, options, results, errors, and troubleshooting. It updates the README, contributor rules, examples, indexes, and specifications.
