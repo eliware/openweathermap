@@ -2,27 +2,31 @@
 
 ## 12.0.0 — 2026-10-13
 
+### Added
+
+This release adds TypeScript declarations and TypeScript checks. It adds `@eliware/test` for test, lint, audit, format, and package checks.
+
+This release adds user documentation for setup, API methods, options, results, errors, and troubleshooting. It adds documentation indexes, repository specifications, and runnable examples.
+
+This release adds shared CI, npm publish, and Knit deployment workflows. The Knit workflow uses `/eliware/openweathermap`.
+
 ### Changed
 
-This release moves the runtime module and TypeScript declaration to `src/`. It moves the matching test to `tests/`.
+This release moves runtime modules and declarations to `src/`. It moves matching tests to `tests/` and separates configuration, coordinate checks, URL building, request handling, and error handling.
 
-This release sets package version 12.0.0. It updates package metadata, files, scripts, and validation for Eliware convention version 12.0.
+This release sets the package version to 12.0.0. It updates package metadata, exports, files, scripts, and validation for Eliware convention version 12.0. It sets Node.js 26 as the minimum version.
 
-This release removes the direct Jest dependency. It adds `@eliware/test` and TypeScript as development dependencies. It updates the lockfile.
+This release removes the direct Jest dependency. It adds `@eliware/test` and TypeScript as development dependencies. It updates the lockfile and Prettier settings.
 
-This release replaces the old workflow with shared CI and npm publish workflows. It updates the Knit checkout path and adds package provenance settings.
+This release adds npm provenance settings. It updates the README, contributor instructions, license, examples, ignore rules, and repository metadata. It applies Simplified Technical English to user and contributor documentation.
 
-This release changes coordinate errors to `lat must be in range` and `lon must be in range`.
+### Fixed
 
-This release validates timeouts as finite non-negative numbers. It validates retry counts as non-negative integers.
+This release validates coordinates, units, timeout values, retry counts, and the fetch function. It names invalid coordinates as `lat` or `lon` and returns an error for invalid options.
 
-This release ends a request when its timeout expires. It skips retries for permanent HTTP errors. It returns no sun data when sunrise or sunset data is missing.
+This release ends a request when its timeout expires, including during response parsing. It retries transport errors and HTTP 408, 429, and 5xx responses. It skips retries for other HTTP errors and invalid JSON.
 
-This release applies timeouts to response parsing. It skips retries when a successful response has invalid JSON. It rejects an unavailable fetch function.
-
-This release updates the MIT copyright and adds shared ignore rules.
-
-This release adds user docs for setup, API inputs, options, results, errors, and troubleshooting. It updates the README, contributor rules, examples, indexes, and specifications.
+This release returns no sun data when the response has no numeric sunrise or sunset values. It keeps the default failure results as `null` or an empty array.
 
 ## 1.1.6 — 2026-08-07
 
