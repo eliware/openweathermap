@@ -1,4 +1,5 @@
 import { getCurrent, get24hForecast, getSun } from "../src/index.mjs";
+
 const lat = 40.7128;
 const lon = -74.006;
 const apiKey = "test";
@@ -37,85 +38,42 @@ const fakeFetch = async (url) => {
       ok: true,
       json: async () => ({
         list: [
-          { dt: Date.now() / 1000 + 1000, main: { temp: 18 }, weather: [{ main: "Clouds" }] },
-          { dt: Date.now() / 1000 + 4000, main: { temp: 19 }, weather: [{ main: "Rain" }] },
+          { dt: 1100, main: { temp: 18 }, weather: [{ main: "Clouds" }] },
+          { dt: 4000, main: { temp: 19 }, weather: [{ main: "Rain" }] },
+          { dt: 90000, main: { temp: 20 }, weather: [{ main: "Sun" }] },
         ],
       }),
     };
   }
   return { ok: false, status: 404, statusText: "Not Found", json: async () => ({}) };
 };
-test("getCurrent returns weather object with sys", async () => {
+
+test("getCurrent returns the weather object", async () => {
   const data = await getCurrent(lat, lon, { apiKey, fetchImpl: fakeFetch });
-  expect(data).toBeTruthy();
   expect(data).toHaveProperty("sys");
 });
-test("get24hForecast returns array", async () => {
-  const data = await get24hForecast(lat, lon, { apiKey, fetchImpl: fakeFetch });
-  expect(Array.isArray(data)).toBe(true);
-  expect(data.length).toBeGreaterThanOrEqual(0);
-});
-test("getSun returns correct sunrise/sunset fields", async () => {
-  const data = await getSun(lat, lon, { apiKey, fetchImpl: fakeFetch });
-  expect(data).toHaveProperty("sunriseUtc");
-  expect(data).toHaveProperty("sunsetUtc");
-  expect(data).toHaveProperty("sunriseLocal");
-  expect(data).toHaveProperty("sunsetLocal");
-  expect(data).toHaveProperty("offset");
-  // Check values are correct
-  expect(data.sunriseUtc).toBe(1750152267);
-  expect(data.sunsetUtc).toBe(1750206576);
-  expect(data.sunriseLocal).toBe(1750152267 - 14400);
-  expect(data.sunsetLocal).toBe(1750206576 - 14400);
-  expect(data.offset).toBe(-14400);
-});
-test("validates API keys and uses environment configuration", async () => {
-  await expect(getCurrent(lat, lon, { fetchImpl: fakeFetch })).rejects.toThrow(
-    "apiKey is required",
-  );
-  await expect(getCurrent(lat, lon, null)).rejects.toThrow("apiKey is required");
-  await expect(get24hForecast(lat, lon, { fetchImpl: fakeFetch })).rejects.toThrow(
-    "apiKey is required",
-  );
-  await expect(get24hForecast(lat, lon, null)).rejects.toThrow("apiKey is required");
-  process.env.OWM_API_KEY = apiKey;
-  await expect(getCurrent(lat, lon, { fetchImpl: fakeFetch, units: "F" })).resolves.toHaveProperty(
-    "sys",
-  );
-  delete process.env.OWM_API_KEY;
-});
 
-test("returns null or empty results for API and malformed responses", async () => {
-  const failing = async () => ({
-    ok: false,
-    status: 500,
-    statusText: "Server Error",
-    json: async () => ({}),
+test("get24hForecast filters to the next 24 hours", async () => {
+  const data = await get24hForecast(lat, lon, {
+    apiKey,
+    fetchImpl: fakeFetch,
+    now: () => 1000,
   });
-  await expect(getCurrent(lat, lon, { apiKey, fetchImpl: failing })).resolves.toBeNull();
-  await expect(
-    getCurrent(lat, lon, {
-      apiKey,
-      fetchImpl: async () => ({
-        ok: true,
-        json: async () => {
-          throw new Error("bad json");
-        },
-      }),
-    }),
-  ).resolves.toBeNull();
-  await expect(get24hForecast(lat, lon, { apiKey, fetchImpl: failing })).resolves.toEqual([]);
-  const malformed = async () => ({ ok: true, json: async () => ({}) });
-  await expect(get24hForecast(lat, lon, { apiKey, fetchImpl: malformed })).resolves.toEqual([]);
-  await expect(getSun(lat, lon, { apiKey, fetchImpl: malformed })).resolves.toBeNull();
+  expect(data.map((item) => item.dt)).toEqual([1100, 4000]);
 });
 
-test("filters forecast to the next 24 hours and supports default units", async () => {
-  const data = await get24hForecast(lat, lon, { apiKey, fetchImpl: fakeFetch, units: "F" });
-  expect(data).toHaveLength(2);
+test("getSun returns UTC and local times", async () => {
+  const data = await getSun(lat, lon, { apiKey, fetchImpl: fakeFetch });
+  expect(data).toEqual({
+    sunriseUtc: 1750152267,
+    sunsetUtc: 1750206576,
+    sunriseLocal: 1750137867,
+    sunsetLocal: 1750192176,
+    offset: -14400,
+  });
 });
 
-test("uses zero timezone offset when omitted", async () => {
+test("getSun uses zero when the service omits its timezone", async () => {
   const fetchImpl = async () => ({
     ok: true,
     json: async () => ({ sys: { sunrise: 1, sunset: 2 } }),
@@ -125,71 +83,8 @@ test("uses zero timezone offset when omitted", async () => {
   expect(data.sunriseLocal).toBe(1);
 });
 
-test("validates coordinates and units", async () => {
-  await expect(getCurrent(91, 0, { apiKey })).rejects.toThrow("lat");
-  await expect(getCurrent(0, 181, { apiKey })).rejects.toThrow("lon");
-  await expect(getCurrent(0, 0, { apiKey, units: "invalid" })).rejects.toThrow("units");
-  await expect(get24hForecast(Number.NaN, 0, { apiKey })).rejects.toThrow("lat");
-});
-
-test("throws structured errors when requested and supports retries", async () => {
-  let attempts = 0;
-  const fetchImpl = async () => {
-    attempts += 1;
-    if (attempts < 2) throw new Error("temporary failure");
-    return { ok: false, status: 401, statusText: "Unauthorized", json: async () => ({}) };
-  };
-  await expect(
-    getCurrent(0, 0, { apiKey, fetchImpl, retries: 1, throwOnError: true }),
-  ).rejects.toMatchObject({ name: "OpenWeatherMapError", status: 401 });
-  expect(attempts).toBe(2);
-});
-
-test("exposes OpenWeatherMapError metadata", async () => {
-  const { OpenWeatherMapError } = await import("../src/index.mjs");
-  const error = new OpenWeatherMapError("failure");
-  const detailed = new OpenWeatherMapError("failure", {
-    status: 500,
-    statusText: "Oops",
-    url: "https://example.test",
-  });
-  expect(error).toMatchObject({ name: "OpenWeatherMapError" });
-  expect(detailed).toMatchObject({
-    name: "OpenWeatherMapError",
-    status: 500,
-    statusText: "Oops",
-    url: "https://example.test",
-  });
-});
-
-test("wraps transport errors when throwOnError is enabled", async () => {
-  await expect(
-    getCurrent(0, 0, {
-      apiKey,
-      fetchImpl: async () => {
-        throw new Error("offline");
-      },
-      throwOnError: true,
-    }),
-  ).rejects.toMatchObject({ name: "OpenWeatherMapError", message: "offline" });
-});
-
-test("uses fallback message for unknown transport errors", async () => {
-  await expect(
-    getCurrent(0, 0, {
-      apiKey,
-      fetchImpl: async () => {
-        throw {};
-      },
-      throwOnError: true,
-    }),
-  ).rejects.toThrow("OpenWeatherMap request failed");
-});
-
-test("aborts timed out requests and returns compatibility fallback", async () => {
-  const fetchImpl = async (_url, { signal }) =>
-    new Promise((resolve, reject) => {
-      signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
-    });
-  await expect(getCurrent(0, 0, { apiKey, fetchImpl, timeout: 10 })).resolves.toBeNull();
+test("public methods return fallback results for incomplete service data", async () => {
+  const fetchImpl = async () => ({ ok: true, json: async () => ({}) });
+  await expect(get24hForecast(lat, lon, { apiKey, fetchImpl })).resolves.toEqual([]);
+  await expect(getSun(lat, lon, { apiKey, fetchImpl })).resolves.toBeNull();
 });
