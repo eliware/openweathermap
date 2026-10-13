@@ -60,7 +60,7 @@ Invalid coordinates, units, timeout, or retries cause a rejected promise with `R
 
 By default, request failures return `null` or an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
 
-`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. HTTP errors include status and status text. Transport errors include a sanitized cause. Error URLs omit the `appid` parameter. The request URL still sends the key to OpenWeatherMap.
+`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. The client uses `@eliware/redact` to redact the API key from error messages, status text, and causes. Error URLs omit the `appid` parameter. The request URL still sends the key to OpenWeatherMap.
 
 ## TypeScript
 
