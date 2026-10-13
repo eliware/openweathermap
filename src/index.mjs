@@ -1,4 +1,5 @@
-import { coordinates, requestOptions } from "./config.mjs";
+import { requestOptions } from "./config.mjs";
+import { coordinates } from "./coordinates.mjs";
 import { request } from "./request.mjs";
 export { OpenWeatherMapError } from "./errors.mjs";
 

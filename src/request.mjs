@@ -1,13 +1,9 @@
 import { OpenWeatherMapError } from "./errors.mjs";
+import { requestFailure } from "./request-errors.mjs";
+import { requestUrl } from "./request-url.mjs";
 
 export async function request(path, lat, lon, config) {
-  const params = new URLSearchParams({
-    lat: String(lat),
-    lon: String(lon),
-    appid: config.apiKey,
-    units: config.owmUnits,
-  });
-  const url = `https://api.openweathermap.org/data/2.5/${path}?${params}`;
+  const url = requestUrl(path, lat, lon, config);
   let lastError;
   for (let attempt = 0; attempt <= config.retries; attempt += 1) {
     const controller = new AbortController();
@@ -26,12 +22,5 @@ export async function request(path, lat, lon, config) {
       clearTimeout(timer);
     }
   }
-  if (config.throwOnError)
-    throw lastError instanceof OpenWeatherMapError
-      ? lastError
-      : new OpenWeatherMapError(lastError?.message ?? "OpenWeatherMap request failed", {
-          cause: lastError,
-          url,
-        });
-  return null;
+  return requestFailure(lastError, config.throwOnError, url);
 }
