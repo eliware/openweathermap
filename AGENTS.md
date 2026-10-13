@@ -2,36 +2,36 @@
 
 ## Project
 
-Maintain the OpenWeatherMap client with Node.js 26 or later. Use native ESM.
+Use Node.js 26 or later. Use native ESM.
 
 ## Scope and boundaries
 
-This repository owns the public npm client and its source. It does not own OpenWeatherMap services.
+Maintain this OpenWeatherMap client and its package. Leave OpenWeatherMap service operations to the provider.
 
 ## Layout
 
-Keep runtime modules in `src/`. Keep matching tests in `tests/`. Keep guides in `docs/`. Keep runnable ESM examples in `examples/`. Keep requirements in `specs/`.
+Keep runtime files in `src/`. Keep one matching test in `tests/` for each runtime file.
 
 ## Development
 
-Keep each source and test module focused. Keep each source module below 100 lines. Keep each test file below 200 lines.
+Keep each runtime file below 100 lines. Keep each test file below 200 lines.
 
 ## Validation
 
-Use Node.js 26 or later. Use native ESM. Run `npm test`, `npm run lint`, `npm run audit`, `npm run format:check`, `npm run typecheck`, and `npm run pack`.
+Run `npm test`. Run `npm run lint`. Run `npm run audit`. Run `npm run format`. Run `npm run format:check`. Run `npm run typecheck`. Run `npm run pack`.
 
 ## Security
 
-Protect API keys and other secrets. Use placeholders in examples. Do not commit `.env` files or credential URLs.
+Keep API keys out of source control. Use placeholders in examples. Do not put API keys in URLs or logs.
 
 ## Changes
 
-Keep user guides current. Record user-visible changes in `RELEASE_NOTES.md`. Validation does not grant release or deployment authority.
+Keep user docs current. Record user-visible changes in `RELEASE_NOTES.md`. Do not treat validation as release approval.
 
 ## Library
 
-Keep the public entrypoint thin. Add a matching test for each runtime module. Keep the TypeScript declaration beside its runtime module.
+Keep API docs and TypeScript declarations aligned with the code. Add one matching test for each runtime file. Keep each declaration beside its runtime file.
 
 ## npm publication
 
-Keep package contents limited to supported consumer files. Follow the Eliware Operations publication process. Do not publish from local validation.
+Include only supported consumer files in the package. Follow the Eliware Operations approval process before publication.

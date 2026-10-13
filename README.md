@@ -23,15 +23,14 @@ A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weath
 
 ## Features
 
-- Get current weather for latitude and longitude.
+- Get current weather for valid coordinates.
 - Get forecast data for the next 24 hours.
 - Get sunrise and sunset times in UTC and local time.
-- Set units, timeouts, retries, and error handling.
 
 ## Requirements
 
-- Node.js 26 or newer.
-- An OpenWeatherMap API key.
+- Use Node.js 26 or later.
+- Get an OpenWeatherMap API key.
 
 ## Setup
 
@@ -41,7 +40,7 @@ Install the package:
 npm install @eliware/openweathermap
 ```
 
-Set `OWM_API_KEY`, or pass `apiKey` in the options object.
+Set `OWM_API_KEY`, or pass `apiKey` to a method.
 
 ## Usage
 
@@ -58,37 +57,31 @@ const sun = await getSun(40.7128, -74.006, options);
 
 ## Development
 
-Use Node.js 26 or newer. Use native ESM. Read [AGENTS.md](AGENTS.md) before you change this repository.
+Use Node.js 26 or later. Use native ESM. Read [AGENTS.md](AGENTS.md) before you change this repository.
 
 ## Testing
 
-Run `npm test` to run repository validation. Run `npm run typecheck` to check TypeScript declarations.
+Run `npm test` to validate the repository.
 
 ## Troubleshooting
 
-Check the API key, coordinates, and unit value. Set `throwOnError: true` to get an `OpenWeatherMapError` with status and URL data.
+Check the API key, coordinates, and units. Set `throwOnError` to `true` to receive an `OpenWeatherMapError`.
 
 ## Security
 
-Keep API keys out of source control. Use environment settings or a secret manager. Do not put API keys in URLs or logs.
+Keep API keys out of source control. Do not put API keys in URLs or logs.
 
 ## API
 
-`getCurrent(lat, lon, options)` returns current weather or `null` after a request failure. `get24hForecast(lat, lon, options)` returns matching forecast entries or an empty array.
-
-`getSun(lat, lon, options)` returns sunrise and sunset timestamps in UTC and local time, or `null` if weather data lacks sun fields.
-
-Options support `apiKey`, `units` (`C`, `F`, `K`, `metric`, `imperial`, or `standard`), `fetchImpl`, `timeout`, `retries`, `now`, and `throwOnError`. Coordinates and units are checked before requests.
+Call `getCurrent`, `get24hForecast`, or `getSun` with latitude, longitude, and an options object. Read the [API reference](docs/api.md) for inputs, options, results, and errors.
 
 ## Packaging
 
-The package exports `src/index.mjs` and its TypeScript declarations. The npm package includes `src/`, `docs/`, `examples/`, and `specs/`. It excludes tests and workflow files.
-
-Run `npm run pack` to check package contents. Validation does not approve a release. Follow the Eliware Operations process before publication.
+The package contains `src/`, `docs/`, `examples/`, and `specs/`. Run `npm run pack` to check package contents. Follow the Eliware Operations approval process before publication.
 
 ## Examples
 
-Read the [example index](examples/README.md) for runnable ESM examples. Read the [documentation index](docs/README.md) for user guides. Read the [specifications index](specs/README.md) for repository requirements.
+Read the [example index](examples/README.md), [user docs](docs/README.md), and [specification index](specs/README.md).
 
 ## Support
 
