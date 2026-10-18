@@ -1,4 +1,4 @@
-import { requestUrl } from "../src/request-url.mjs";
+import { requestUrl } from "../../src/request/url.mjs";
 
 test("requestUrl encodes query values", () => {
   const url = new URL(

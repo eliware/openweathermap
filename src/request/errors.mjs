@@ -1,5 +1,5 @@
 import { redactText as redactSensitiveText } from "@eliware/redact";
-import { OpenWeatherMapError } from "./errors.mjs";
+import { OpenWeatherMapError } from "../errors.mjs";
 
 function redactText(value, apiKey) {
   const secrets = apiKey ? [String(apiKey)] : [];

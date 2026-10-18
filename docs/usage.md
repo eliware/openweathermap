@@ -2,7 +2,7 @@
 
 ## Requirements
 
-Use Node.js 26 or later. Get an OpenWeatherMap API key. The package uses Node.js native `fetch`.
+Use Node.js 26 or later. Request an OpenWeatherMap API key. The package uses Node.js native `fetch`.
 
 ## Install the package
 
@@ -32,7 +32,7 @@ Keep the key out of source files, URLs, and logs.
 
 ## Request weather data
 
-Import the methods that you need. Pass latitude, longitude, and options to each method.
+Import the methods for your task. Pass latitude, longitude, and options to each method.
 
 ```js
 import { getCurrent, get24hForecast, getSun } from "@eliware/openweathermap";
@@ -50,8 +50,8 @@ console.log(forecast);
 console.log(sun);
 ```
 
-The example uses `OWM_API_KEY` from the process environment. Pass `apiKey` in `options` when you do not use that environment setting.
+The example uses `OWM_API_KEY` from the process environment. Pass `apiKey` in `options` when you do not use that environment variable.
 
-`getCurrent` returns the provider's current weather object. `get24hForecast` returns forecast entries for the next 24 hours. `getSun` returns sun times and the provider's time-zone offset.
+`getCurrent` returns the provider's current weather object. `get24hForecast` returns data entries for 24 hours after `now`. `getSun` returns sun times and the provider's time-zone offset.
 
 Read the [API reference](api.md) for all options and return values.

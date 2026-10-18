@@ -1,6 +1,6 @@
 import { OpenWeatherMapError } from "./errors.mjs";
-import { requestFailure, shouldRetry } from "./request-errors.mjs";
-import { requestUrl } from "./request-url.mjs";
+import { requestFailure, shouldRetry } from "./request/errors.mjs";
+import { requestUrl } from "./request/url.mjs";
 
 export async function request(path, lat, lon, config) {
   const url = requestUrl(path, lat, lon, config);

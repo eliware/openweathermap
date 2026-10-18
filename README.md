@@ -2,7 +2,7 @@
 
 ## @eliware/openweathermap [![npm](https://img.shields.io/npm/v/@eliware/openweathermap)](https://www.npmjs.com/package/@eliware/openweathermap) [![License](https://img.shields.io/github/license/eliware/openweathermap)](https://github.com/eliware/openweathermap/blob/main/LICENSE) [![CI](https://github.com/eliware/openweathermap/actions/workflows/ci.yaml/badge.svg)](https://github.com/eliware/openweathermap/actions/workflows/ci.yaml)
 
-A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour forecast, and sunrise/sunset times with a clean, promise-based API.
+A Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour weather data, and sunrise/sunset times with a promise-based API.
 
 ## Table of Contents
 
@@ -23,14 +23,14 @@ A simple, modern, Node.js client for the OpenWeatherMap API. Fetch current weath
 
 ## Features
 
-- Get current weather for valid coordinates.
-- Get forecast data for the next 24 hours.
-- Get sunrise and sunset times in UTC and local time.
+- Retrieve current weather for valid latitude and longitude.
+- Retrieve 24-hour weather data.
+- Retrieve sunrise and sunset times in UTC and local time.
 
 ## Requirements
 
 - Use Node.js 26 or later.
-- Get an OpenWeatherMap API key.
+- Request an OpenWeatherMap API key.
 
 ## Setup
 

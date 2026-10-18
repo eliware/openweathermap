@@ -1,5 +1,5 @@
-import { OpenWeatherMapError } from "../src/errors.mjs";
-import { requestFailure, shouldRetry } from "../src/request-errors.mjs";
+import { OpenWeatherMapError } from "../../src/errors.mjs";
+import { requestFailure, shouldRetry } from "../../src/request/errors.mjs";
 
 const url = "https://example.test/weather";
 

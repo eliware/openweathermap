@@ -1,6 +1,6 @@
-version: "12.0"
+version: "13.0"
 description: Lists work outside the repository scope.
 outOfScope:
-  - OpenWeatherMap service operations.
+  - OpenWeatherMap API operations.
   - API provider account changes.
   - Private publication or deployment operations.

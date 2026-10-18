@@ -14,19 +14,19 @@ Call each method with `lat`, `lon`, and an optional `options` object.
 - `lon`: finite number from -180 to 180.
 - `options`: settings for the request.
 
-The method rejects with `RangeError` when coordinates are outside these limits or are not finite numbers.
+The method rejects with `RangeError` if latitude or longitude falls outside these limits or is not finite.
 
 ## Options
 
-| Option         | Type     | Default              | Description                                                                                               |
-| -------------- | -------- | -------------------- | --------------------------------------------------------------------------------------------------------- |
-| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                                                                                   |
-| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`.                                                       |
-| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                                                                           |
-| `timeout`      | number   | `10000`              | Maximum time per request attempt in milliseconds. Zero schedules the timeout on the next event-loop turn. |
-| `retries`      | number   | `0`                  | Non-negative integer count of extra attempts.                                                             |
-| `now`          | function | Unix time in seconds | Clock for forecast filtering.                                                                             |
-| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.                                                        |
+| Option         | Type     | Default              | Description                                                                                                     |
+| -------------- | -------- | -------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                                                                                         |
+| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`.                                                             |
+| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                                                                                 |
+| `timeout`      | number   | `10000`              | Maximum time for one request try in milliseconds. Zero schedules the timeout after the current event-loop turn. |
+| `retries`      | number   | `0`                  | Number of added request tries. Use a non-negative integer.                                                      |
+| `now`          | function | Unix time in seconds | Clock used to select entries in the 24-hour range.                                                              |
+| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.                                                              |
 
 `C` maps to `metric`. `F` maps to `imperial`. `K` maps to `standard`. The three provider unit names map to themselves.
 
@@ -40,7 +40,7 @@ The package reads `OWM_API_KEY` when `apiKey` is not set. The package does not l
 
 ## `get24hForecast`
 
-`get24hForecast(lat, lon, options)` requests forecast data. It returns entries with `dt` after `now` and at or before `now + 24 hours`. The clock uses Unix time in seconds. The method returns an empty array when the request fails or the response has no `list` array.
+`get24hForecast(lat, lon, options)` requests 24-hour data. It returns entries with `dt` after `now` and at or before `now + 24 hours`. The clock uses Unix time in seconds. The method returns an empty array if the request fails or the response has no `list` array.
 
 ## `getSun`
 
@@ -60,7 +60,7 @@ Invalid coordinates, units, timeout, or retries cause a rejected promise with `R
 
 By default, request failures return `null` or an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
 
-`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. The client uses `@eliware/redact` to redact the API key from error messages, status text, and causes. Error URLs omit the `appid` parameter. The request URL still sends the key to OpenWeatherMap.
+`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. The client uses `@eliware/redact` to redact the API key from error messages, status text, and causes. Error URLs omit the `appid` parameter. The client includes the key in its request to OpenWeatherMap.
 
 ## TypeScript
 

@@ -10,14 +10,14 @@ Pass finite numbers for latitude and longitude. Keep latitude from -90 to 90. Ke
 
 ## Request failure
 
-By default, current weather and sun requests return `null`. Forecast requests return an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
+By default, current weather and sun requests return `null`. The `get24hForecast` method returns an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
 
 Check `status` and `statusText` for an HTTP error. Check `cause` for a transport error. Check `url` to see the request target. Error URLs omit `appid`. Error messages, status text, and causes redact the API key.
 
-## Slow or unstable requests
+## Slow requests
 
 Set `timeout` in milliseconds to end a slow request. Set `retries` to allow more attempts. The default timeout is 10000 milliseconds. The default retry count is zero.
 
 ## No sun data
 
-`getSun` needs the `sys` object from the current weather response. The method returns `null` if that object is absent. It uses a zero time-zone offset when the response omits the offset.
+`getSun` requires the `sys` object from the current weather response. The method returns `null` if that object is missing. It uses a zero time-zone offset when the response omits the offset.
