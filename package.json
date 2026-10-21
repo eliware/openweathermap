@@ -1,6 +1,6 @@
 {
   "name": "@eliware/openweathermap",
-  "version": "14.0.0",
+  "version": "15.0.0",
   "type": "module",
   "description": "A Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour weather data, and sunrise/sunset times with a promise-based API.",
   "keywords": [
@@ -44,10 +44,10 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@eliware/log": "^14.0.0"
+    "@eliware/log": "^15.0.0"
   },
   "devDependencies": {
-    "@eliware/test": "^14.0.0",
+    "@eliware/test": "^15.0.0",
     "typescript": "^7.0.2"
   },
   "jest": {

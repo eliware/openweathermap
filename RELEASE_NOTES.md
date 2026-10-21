@@ -1,5 +1,17 @@
 # Release Notes
 
+## 15.0.0 — 2026-10-21
+
+### Changed
+
+This release adopts Eliware convention 15.0. It updates the package and repository specification versions to 15.0.0 and 15.0.
+
+This release updates `@eliware/log` and `@eliware/test` to 15.0.0. It updates transitive dependencies and refreshes the lockfile.
+
+This release updates the README with the package entry point, numeric version rules, npm publication limits, and approval process.
+
+This release updates the usage guide with the `OWM_API_KEY` default and requirement. It explains that each request needs an API key.
+
 ## 14.0.0 — 2026-10-21
 
 ### Changed

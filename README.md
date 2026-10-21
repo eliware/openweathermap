@@ -74,11 +74,14 @@ Keep API keys out of source files and logs. The client sends each key to OpenWea
 ## API
 
 Import `getCurrent`, `get24hForecast`, or `getSun` with latitude, longitude, and optional settings.
+The package exports one ESM entry point and its TypeScript declarations.
 Read the [API reference](docs/api.md) and [user documentation index](docs/README.md).
 
 ## Packaging
 
 The package includes `package.json`, `src/`, `docs/`, `examples/`, `specs/`, `README.md`, `AGENTS.md`, `RELEASE_NOTES.md`, `LICENSE`, and `.env.example`.
+Use numeric `MAJOR.MINOR.PATCH` versions. The npm workflow publishes only a matching `v<version>` tag and adds npm provenance.
+Follow Eliware Operations procedures for release approval.
 Run `npm run pack` to check package contents.
 
 ## Examples

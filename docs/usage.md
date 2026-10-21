@@ -15,6 +15,9 @@ npm install @eliware/openweathermap
 
 ## Set the API key
 
+The `OWM_API_KEY` environment variable has no default value.
+Provide an API key through this variable or the `apiKey` option.
+An API key is required for each request.
 Set `OWM_API_KEY` in the process environment before you start Node.js.
 You can also pass the key as the `apiKey` option to each method.
 The package uses the `apiKey` option before it uses `OWM_API_KEY`.
