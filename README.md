@@ -23,14 +23,12 @@ A Node.js client for the OpenWeatherMap API. Fetch current weather, 24-hour weat
 
 ## Features
 
-- Retrieve current weather for valid latitude and longitude.
-- Retrieve 24-hour weather data.
-- Retrieve sunrise and sunset times in UTC and local time.
+- Get current weather and 24-hour weather data by latitude and longitude.
+- Get sunrise and sunset times in UTC and local time.
 
 ## Requirements
 
-- Use Node.js 26 or later.
-- Request an OpenWeatherMap API key.
+Use Node.js 26 or later. Get an OpenWeatherMap API key.
 
 ## Setup
 
@@ -40,24 +38,26 @@ Install the package:
 npm install @eliware/openweathermap
 ```
 
-Set `OWM_API_KEY`, or pass `apiKey` to a method.
+Set `OWM_API_KEY` before you start Node.js, or pass `apiKey` to a method.
+Read the [user guide](docs/README.md) for setup steps.
 
 ## Usage
-
-Read the [release notes](RELEASE_NOTES.md) for version changes.
 
 ```js
 import { getCurrent, get24hForecast, getSun } from "@eliware/openweathermap";
 
-const options = { apiKey: process.env.OWM_API_KEY, units: "F" };
+const options = { units: "F" };
 const current = await getCurrent(40.7128, -74.006, options);
-const forecast = await get24hForecast(40.7128, -74.006, options);
+const weather = await get24hForecast(40.7128, -74.006, options);
 const sun = await getSun(40.7128, -74.006, options);
 ```
 
+Set `OWM_API_KEY` in the process environment before you run this example.
+Read the [API reference](docs/api.md) for method details and the [release notes](RELEASE_NOTES.md) for version changes.
+
 ## Development
 
-Use Node.js 26 or later. Use native ESM. Read [AGENTS.md](AGENTS.md) before you change this repository.
+Use native ESM. Read [AGENTS.md](AGENTS.md) before you change this repository.
 
 ## Testing
 
@@ -65,23 +65,25 @@ Run `npm test` to validate the repository.
 
 ## Troubleshooting
 
-Check the API key, coordinates, and units. Set `throwOnError` to `true` to receive an `OpenWeatherMapError`.
+Read the [troubleshooting guide](docs/troubleshooting.md) to resolve common problems.
 
 ## Security
 
-Keep API keys out of source control. Do not put API keys in URLs or logs.
+Keep API keys out of source files and logs. The client sends each key to OpenWeatherMap through HTTPS.
 
 ## API
 
-Call `getCurrent`, `get24hForecast`, or `getSun` with latitude, longitude, and an options object. Read the [API reference](docs/api.md) for inputs, options, results, and errors.
+Import `getCurrent`, `get24hForecast`, or `getSun` with latitude, longitude, and optional settings.
+Read the [API reference](docs/api.md) and [user documentation index](docs/README.md).
 
 ## Packaging
 
-The package contains `src/`, `docs/`, `examples/`, and `specs/`. Run `npm run pack` to check package contents. Follow the Eliware Operations approval process before publication.
+The package includes `package.json`, `src/`, `docs/`, `examples/`, `specs/`, `README.md`, `AGENTS.md`, `RELEASE_NOTES.md`, `LICENSE`, and `.env.example`.
+Run `npm run pack` to check package contents.
 
 ## Examples
 
-Read the [example index](examples/README.md), [user docs](docs/README.md), and [specification index](specs/README.md).
+Read the [example index](examples/README.md) and [specification index](specs/README.md).
 
 ## Support
 

@@ -1,45 +1,114 @@
 # API reference
 
-Import methods from `@eliware/openweathermap`. Each method returns a promise.
+Import the methods from `@eliware/openweathermap`. Each method returns a promise.
 
 ```js
 import { getCurrent, get24hForecast, getSun } from "@eliware/openweathermap";
 ```
 
-## Method inputs
+## Methods
 
-Call each method with `lat`, `lon`, and an optional `options` object.
+### `getCurrent(lat, lon, options)`
 
-- `lat`: finite number from -90 to 90.
-- `lon`: finite number from -180 to 180.
-- `options`: settings for the request.
+Request current weather for a location. The method returns the JSON object from the OpenWeatherMap current weather endpoint.
+The method returns `null` after a request failure unless `throwOnError` is `true`.
 
-The method rejects with `RangeError` if latitude or longitude falls outside these limits or is not finite.
+### `get24hForecast(lat, lon, options)`
+
+Request future weather data and return entries with `dt` after the current time and at or before 24 hours later.
+The `dt` field uses Unix time in seconds.
+The method returns an empty array when a request fails or the response has no `list` array.
+The method does not validate the type or contents of entries in `list`.
+
+### `getSun(lat, lon, options)`
+
+Request current weather and return sunrise and sunset data.
+The method returns `null` when the request fails or the response has no `sys` object with numeric `sunrise` and `sunset` values.
+The method treats a missing or zero time-zone offset as zero.
+
+The result has these fields:
+
+| Field          | Type   | Description                                           |
+| -------------- | ------ | ----------------------------------------------------- |
+| `sunriseUtc`   | number | Sunrise time as a Unix timestamp in seconds.          |
+| `sunsetUtc`    | number | Sunset time as a Unix timestamp in seconds.           |
+| `sunriseLocal` | number | Sunrise timestamp plus the provider time-zone offset. |
+| `sunsetLocal`  | number | Sunset timestamp plus the provider time-zone offset.  |
+| `offset`       | number | Provider time-zone offset from UTC, in seconds.       |
+
+The `sunriseLocal` and `sunsetLocal` fields are shifted timestamps.
+Convert them to a date or time with your preferred date library or JavaScript date functions.
+
+## Inputs
+
+Call each method with latitude, longitude, and an optional settings object.
+
+| Input     | Type   | Valid values                                    |
+| --------- | ------ | ----------------------------------------------- |
+| `lat`     | number | A finite number from -90 to 90.                 |
+| `lon`     | number | A finite number from -180 to 180.               |
+| `options` | object | Optional request settings in the Options table. |
+
+The method rejects with `RangeError` when latitude or longitude is not finite or falls outside its range.
 
 ## Options
 
-| Option         | Type     | Default              | Description                                                                                                     |
-| -------------- | -------- | -------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `apiKey`       | string   | `OWM_API_KEY`        | OpenWeatherMap API key.                                                                                         |
-| `units`        | string   | `C`                  | `C`, `F`, `K`, `metric`, `imperial`, or `standard`.                                                             |
-| `fetchImpl`    | function | `fetch`              | Fetch function for the request.                                                                                 |
-| `timeout`      | number   | `10000`              | Maximum time for one request try in milliseconds. Zero schedules the timeout after the current event-loop turn. |
-| `retries`      | number   | `0`                  | Number of added request tries. Use a non-negative integer.                                                      |
-| `now`          | function | Unix time in seconds | Clock used to select entries in the 24-hour range.                                                              |
-| `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.                                                              |
-| `logger`       | object   | none                 | Optional logger from `@eliware/log`.                                                                            |
+| Option         | Type          | Default           | Description                                                            |
+| -------------- | ------------- | ----------------- | ---------------------------------------------------------------------- |
+| `apiKey`       | string        | `OWM_API_KEY`     | OpenWeatherMap API key.                                                |
+| `units`        | `Units`       | `C`               | Temperature and measurement units.                                     |
+| `fetchImpl`    | function      | `fetch`           | Function that makes the HTTP request.                                  |
+| `timeout`      | number        | `10000`           | Maximum time for one request try, in milliseconds.                     |
+| `retries`      | number        | `0`               | Number of more tries after retryable failures.                         |
+| `now`          | function      | Current Unix time | Function that returns Unix time in seconds for weather data filtering. |
+| `throwOnError` | boolean       | `false`           | Throw `OpenWeatherMapError` after a request failure.                   |
+| `logger`       | logger object | none              | Optional logger from `@eliware/log`.                                   |
 
-`C` maps to `metric`. `F` maps to `imperial`. `K` maps to `standard`. The three provider unit names map to themselves.
+The package uses the `apiKey` option before it uses `OWM_API_KEY`.
+The package does not load `.env` files.
+The package sends the API key to OpenWeatherMap through HTTPS as the `appid` query parameter.
 
-Retries apply to transport errors and HTTP 408, 429, and 5xx responses. The client does not retry other HTTP errors.
+The `Units` type accepts `C`, `F`, `K`, `metric`, `imperial`, or `standard`.
+The package maps `C` to `metric`, `F` to `imperial`, and `K` to `standard`.
+The package passes the other three values to OpenWeatherMap without changes.
 
-The package reads `OWM_API_KEY` when `apiKey` is not set. The package does not load `.env` files.
+The `fetchImpl` option must be a function. The `timeout` option must be a finite, non-negative number.
+The `retries` option must be a non-negative integer. Use a `now` function that returns Unix time in seconds.
+
+Invalid units, timeout, or retry values cause a rejected promise with `RangeError`.
+An invalid `fetchImpl` causes a rejected promise with `TypeError`.
+A missing API key causes a rejected promise with `Error`.
+
+## Request behavior
+
+The client calls the OpenWeatherMap current weather endpoint for `getCurrent` and `getSun`.
+The client calls the OpenWeatherMap weather data endpoint for `get24hForecast`.
+The client sends coordinates, units, and the API key with each request.
+
+The timeout applies to one request try and response parsing.
+The client retries transport errors and HTTP status 408, 429, and 500 or higher.
+The client does not retry other HTTP errors or invalid JSON responses.
+The `retries` value counts more tries, so `retries: 2` allows a maximum of three tries.
+
+## Failure behavior
+
+By default, failed requests return `null` from `getCurrent` and `getSun`.
+By default, `get24hForecast` returns an empty array after a request failure.
+Set `throwOnError` to `true` to receive an `OpenWeatherMapError` as an alternative.
+
+`OpenWeatherMapError` extends `Error` and has a `name` value of `OpenWeatherMapError`.
+It can include `status`, `statusText`, `url`, and `cause` fields.
+Some fields may be undefined when the error comes from a transport failure or a timeout.
+The error URL omits the `appid` parameter.
+The client redacts the API key from error messages, status text, causes, and log records.
 
 ## Logging
 
-Pass a logger from `@eliware/log` in `logger` to receive structured records. The package writes `debug` request starts, `http` responses, `info` successes, `warn` retries, and `error` failures. If `logger` has no value, the package writes no records.
-
-Records include the operation, request number, and response status when available. Records omit coordinates, the API key, and the request URL. The logger uses `safeSerialize` and the redaction tools from `@eliware/log`.
+Pass a logger from `@eliware/log` in the `logger` option to receive structured records.
+The client calls the `debug`, `http`, `info`, `warn`, and `error` logger methods when those methods exist.
+The client records request starts, HTTP responses, successes, retries, and failures.
+The client omits coordinates, the API key, and the request URL from its log metadata.
+The client uses `safeSerialize` and the redaction tools from `@eliware/log`.
 
 ```js
 import { createLogger } from "@eliware/log";
@@ -49,36 +118,11 @@ const logger = createLogger({ level: "debug", format: "json" });
 await getCurrent(40.7128, -74.006, { logger });
 ```
 
-`@eliware/log` supports `error`, `warn`, `info`, `http`, `verbose`, `debug`, and `silly` levels. The package uses the levels listed above.
-
-## `getCurrent`
-
-`getCurrent(lat, lon, options)` requests current weather. It returns the provider's JSON object. A request failure returns `null` by default.
-
-## `get24hForecast`
-
-`get24hForecast(lat, lon, options)` requests 24-hour data. It returns entries with `dt` after `now` and at or before `now + 24 hours`. The clock uses Unix time in seconds. The method returns an empty array if the request fails or the response has no `list` array.
-
-## `getSun`
-
-`getSun(lat, lon, options)` requests current weather and reads its sun times and time-zone offset. It returns these fields:
-
-- `sunriseUtc`: sunrise time as a Unix timestamp.
-- `sunsetUtc`: sunset time as a Unix timestamp.
-- `sunriseLocal`: sunrise timestamp plus the provider's time-zone offset.
-- `sunsetLocal`: sunset timestamp plus the provider's time-zone offset.
-- `offset`: time-zone offset in seconds from UTC.
-
-The method returns `null` when the request fails or the response has no `sys`, `sunrise`, or `sunset` value. It uses an offset of zero when the response has no offset.
-
-## Errors
-
-Invalid coordinates, units, timeout, or retries cause a rejected promise with `RangeError`. A missing API key causes a rejected promise with `Error`. An invalid `fetchImpl` causes a rejected promise with `TypeError`.
-
-By default, request failures return `null` or an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
-
-`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. The client uses `@eliware/log` redaction tools to redact the API key from error messages, status text, causes, and log records. Error URLs omit the `appid` parameter. The client includes the key in its request to OpenWeatherMap.
+`@eliware/log` supports `error`, `warn`, `info`, `http`, `verbose`, `debug`, and `silly` levels.
+This client uses `debug`, `http`, `info`, `warn`, and `error`.
 
 ## TypeScript
 
-The package includes type declarations for its methods, options, units, and error class.
+The package includes declarations in `src/index.d.ts`.
+Import `Units`, `OpenWeatherOptions`, and `OpenWeatherMapError` from the package.
+The methods return promises with the result types described above.
