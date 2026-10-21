@@ -12,6 +12,12 @@ This release updates the README with the package entry point, numeric version ru
 
 This release updates the usage guide with the `OWM_API_KEY` default and requirement. It explains that each request needs an API key.
 
+### Fixed
+
+This release starts the timeout after the request operation starts. A request that resolves during the current event-loop turn can return when the timeout is zero.
+
+This release handles fetch errors that occur after a timeout. Regression tests cover both timeout cases.
+
 ## 14.0.0 — 2026-10-21
 
 ### Changed
