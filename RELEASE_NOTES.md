@@ -1,14 +1,18 @@
 # Release Notes
 
-## 13.0.0 — 2026-10-17
+## 14.0.0 — 2026-10-21
 
 ### Changed
 
-This release adopts Eliware library convention 13.0. It updates the package version, workflows, Knit deployment, and contributor instructions.
+This release adopts Eliware library convention 14.0. It updates package metadata and dependency versions.
+
+This release updates workflow files, Knit settings, contributor instructions, user docs, and repository specifications.
+
+This release groups request helpers and their tests under matching folders.
 
 ### Security
 
-This release removes `appid` from public error URLs. It uses `@eliware/redact` to redact the API key from error messages, status text, and causes.
+This release adds API key redaction to public errors. Error URLs omit `appid`. The client uses `@eliware/redact` to redact API keys from error messages, status text, and causes.
 
 ## 12.0.0 — 2026-10-13
 
@@ -37,5 +41,3 @@ This release validates latitude, longitude, units, timeout values, retry counts,
 This release ends a request when its timeout expires, also during response parsing. It retries transport errors and HTTP 408, 429, and 5xx responses. It skips retries for other HTTP errors and invalid JSON.
 
 This release returns no sun data when the response has no numeric sunrise or sunset values. It keeps the default failure results as `null` or an empty array.
-
-This release adds `@eliware/redact` as a runtime dependency. It removes `appid` from public error URLs and redacts the API key from error messages, HTTP status text, and causes.
