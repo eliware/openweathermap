@@ -1,3 +1,5 @@
+import type { LoggerWithConfiguredLevels } from "@eliware/log";
+
 export type Units = "C" | "F" | "K" | "metric" | "imperial" | "standard";
 export interface OpenWeatherOptions {
   apiKey?: string;
@@ -7,6 +9,7 @@ export interface OpenWeatherOptions {
   retries?: number;
   now?: () => number;
   throwOnError?: boolean;
+  logger?: LoggerWithConfiguredLevels;
 }
 export class OpenWeatherMapError extends Error {
   status?: number;

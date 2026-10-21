@@ -27,12 +27,29 @@ The method rejects with `RangeError` if latitude or longitude falls outside thes
 | `retries`      | number   | `0`                  | Number of added request tries. Use a non-negative integer.                                                      |
 | `now`          | function | Unix time in seconds | Clock used to select entries in the 24-hour range.                                                              |
 | `throwOnError` | boolean  | `false`              | Throw `OpenWeatherMapError` after request failure.                                                              |
+| `logger`       | object   | none                 | Optional logger from `@eliware/log`.                                                                            |
 
 `C` maps to `metric`. `F` maps to `imperial`. `K` maps to `standard`. The three provider unit names map to themselves.
 
 Retries apply to transport errors and HTTP 408, 429, and 5xx responses. The client does not retry other HTTP errors.
 
 The package reads `OWM_API_KEY` when `apiKey` is not set. The package does not load `.env` files.
+
+## Logging
+
+Pass a logger from `@eliware/log` in `logger` to receive structured records. The package writes `debug` request starts, `http` responses, `info` successes, `warn` retries, and `error` failures. If `logger` has no value, the package writes no records.
+
+Records include the operation, request number, and response status when available. Records omit coordinates, the API key, and the request URL. The logger uses `safeSerialize` and the redaction tools from `@eliware/log`.
+
+```js
+import { createLogger } from "@eliware/log";
+import { getCurrent } from "@eliware/openweathermap";
+
+const logger = createLogger({ level: "debug", format: "json" });
+await getCurrent(40.7128, -74.006, { logger });
+```
+
+`@eliware/log` supports `error`, `warn`, `info`, `http`, `verbose`, `debug`, and `silly` levels. The package uses the levels listed above.
 
 ## `getCurrent`
 
@@ -60,7 +77,7 @@ Invalid coordinates, units, timeout, or retries cause a rejected promise with `R
 
 By default, request failures return `null` or an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
 
-`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. The client uses `@eliware/redact` to redact the API key from error messages, status text, and causes. Error URLs omit the `appid` parameter. The client includes the key in its request to OpenWeatherMap.
+`OpenWeatherMapError` has optional `status`, `statusText`, `url`, and `cause` fields. The client uses `@eliware/log` redaction tools to redact the API key from error messages, status text, causes, and log records. Error URLs omit the `appid` parameter. The client includes the key in its request to OpenWeatherMap.
 
 ## TypeScript
 

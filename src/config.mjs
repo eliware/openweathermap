@@ -16,6 +16,7 @@ export function requestOptions(options) {
     retries = 0,
     now = () => Date.now() / 1000,
     throwOnError = false,
+    logger,
   } = options ?? {};
   if (!apiKey) throw new Error("apiKey is required");
   const owmUnits = unitsMap[units];
@@ -25,5 +26,5 @@ export function requestOptions(options) {
     throw new RangeError("timeout must be a finite non-negative number");
   if (!Number.isInteger(retries) || retries < 0)
     throw new RangeError("retries must be a non-negative integer");
-  return { apiKey, owmUnits, fetchImpl, timeout, retries, now, throwOnError };
+  return { apiKey, owmUnits, fetchImpl, timeout, retries, now, throwOnError, logger };
 }

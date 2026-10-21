@@ -12,7 +12,7 @@ Pass finite numbers for latitude and longitude. Keep latitude from -90 to 90. Ke
 
 By default, current weather and sun requests return `null`. The `get24hForecast` method returns an empty array. Set `throwOnError` to `true` to receive `OpenWeatherMapError`.
 
-Check `status` and `statusText` for an HTTP error. Check `cause` for a transport error. Check `url` to see the request target. Error URLs omit `appid`. Error messages, status text, and causes redact the API key.
+Check `status` and `statusText` for an HTTP error. Check `cause` for a transport error. Check `url` to see the request target. Error URLs omit `appid`. Error messages, status text, causes, and log records redact the API key.
 
 ## Slow requests
 

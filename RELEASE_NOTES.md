@@ -10,9 +10,13 @@ This release updates workflow files, Knit settings, contributor instructions, us
 
 This release groups request helpers and their tests under matching folders.
 
+This release adds optional structured logging through `@eliware/log`. It adds a `logger` option and emits request, response, retry, success, and failure records.
+
+This release replaces the direct `@eliware/redact` dependency with `@eliware/log`.
+
 ### Security
 
-This release adds API key redaction to public errors. Error URLs omit `appid`. The client uses `@eliware/redact` to redact API keys from error messages, status text, and causes.
+This release uses `@eliware/log` safe serialization and redaction. Error URLs omit `appid`. Error messages, status text, causes, and log records do not expose API keys.
 
 ## 12.0.0 — 2026-10-13
 

@@ -39,7 +39,7 @@ test("requestFailure redacts malformed URLs and accepts no URL", () => {
   } catch (error) {
     malformed = error;
   }
-  expect(malformed.url).toBe("not a url?appid=[redacted]");
+  expect(malformed.url).toBe("not a url?appid=[REDACTED]");
 
   let missing;
   try {
@@ -48,6 +48,14 @@ test("requestFailure redacts malformed URLs and accepts no URL", () => {
     missing = error;
   }
   expect(missing.url).toBeUndefined();
+
+  let missingTransportUrl;
+  try {
+    requestFailure(new Error("failure"), true);
+  } catch (error) {
+    missingTransportUrl = error;
+  }
+  expect(missingTransportUrl.url).toBeUndefined();
 });
 
 test("requestFailure handles error values with throwing message getters", () => {

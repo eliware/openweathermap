@@ -44,7 +44,7 @@
     "node": ">=26"
   },
   "dependencies": {
-    "@eliware/redact": "^14.0.0"
+    "@eliware/log": "^14.0.0"
   },
   "devDependencies": {
     "@eliware/test": "^14.0.0",
