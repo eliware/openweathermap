@@ -125,3 +125,21 @@ test("request timeout covers JSON parsing", async () => {
   const fetchImpl = async () => ({ ok: true, json: async () => new Promise(() => {}) });
   await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 10 }))).resolves.toBeNull();
 });
+
+test("request completes a ready operation when timeout is zero", async () => {
+  const fetchImpl = async () => ({ ok: true, json: async () => ({ value: 1 }) });
+  await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 0 }))).resolves.toEqual({
+    value: 1,
+  });
+});
+
+test("request handles fetch rejection after timeout", async () => {
+  let rejectFetch;
+  const fetchImpl = () =>
+    new Promise((_resolve, reject) => {
+      rejectFetch = reject;
+    });
+  await expect(request("weather", 1, 2, config(fetchImpl, { timeout: 0 }))).resolves.toBeNull();
+  rejectFetch(new Error("late failure"));
+  await Promise.resolve();
+});

@@ -22,12 +22,6 @@ export async function request(path, lat, lon, config) {
     );
     const controller = new AbortController();
     let timer;
-    const timeout = new Promise((resolve, reject) => {
-      timer = setTimeout(() => {
-        controller.abort();
-        reject(new Error("OpenWeatherMap request timed out"));
-      }, config.timeout);
-    });
     try {
       const operation = (async () => {
         const response = await config.fetchImpl(url, { signal: controller.signal });
@@ -60,6 +54,13 @@ export async function request(path, lat, lon, config) {
           });
         }
       })();
+      operation.catch(() => {});
+      const timeout = new Promise((resolve, reject) => {
+        timer = setTimeout(() => {
+          controller.abort();
+          reject(new Error("OpenWeatherMap request timed out"));
+        }, config.timeout);
+      });
       return await Promise.race([operation, timeout]);
     } catch (error) {
       lastError = error;
