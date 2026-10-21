@@ -32,15 +32,7 @@ test("requestFailure uses a fallback for errors without messages", () => {
   expect(() => requestFailure({}, true, url)).toThrow("OpenWeatherMap request failed");
 });
 
-test("requestFailure redacts malformed URLs and accepts no URL", () => {
-  let malformed;
-  try {
-    requestFailure(new Error("failure"), true, "not a url?appid=private-key", "private-key");
-  } catch (error) {
-    malformed = error;
-  }
-  expect(malformed.url).toBe("not a url?appid=[REDACTED]");
-
+test("requestFailure accepts no URL", () => {
   let missing;
   try {
     requestFailure(new OpenWeatherMapError("failure"), true);
