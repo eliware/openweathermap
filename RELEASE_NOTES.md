@@ -4,19 +4,25 @@
 
 ### Changed
 
-This release adopts Eliware library convention 14.0. It updates package metadata and dependency versions.
+This release adopts Eliware library convention 14.0. It updates package metadata, dependencies, repository specifications, and contributor guidance.
 
-This release updates workflow files, Knit settings, contributor instructions, user docs, and repository specifications.
+This release updates CI and npm publication workflows. CI and release validation use checkout action v7 and fetch the full Git history.
 
-This release groups request helpers and their tests under matching folders.
+This release updates the Knit deployment workflow to use the shared deployment commands.
 
-This release adds optional structured logging through `@eliware/log`. It adds a `logger` option and emits request, response, retry, success, and failure records.
+This release expands the user guides with complete setup, API, result, request, error, logging, and troubleshooting details. It corrects the `.env.example` instructions to match runtime behavior.
 
-This release replaces the direct `@eliware/redact` dependency with `@eliware/log`.
+This release separates unit mapping, retry policy, and request redaction into focused modules with matching tests.
+
+### Added
+
+This release adds optional structured logging through `@eliware/log`. Pass a logger with the `logger` option to receive request, response, success, retry, and failure records.
+
+This release adds the `logger` option to the TypeScript declarations.
 
 ### Security
 
-This release uses `@eliware/log` safe serialization and redaction. Error URLs omit `appid`. Error messages, status text, causes, and log records do not expose API keys.
+This release replaces the direct `@eliware/redact` dependency with `@eliware/log` safe serialization and redaction tools. Error URLs omit `appid`. Error messages, status text, causes, and log records redact API keys.
 
 ## 12.0.0 — 2026-10-13
 
