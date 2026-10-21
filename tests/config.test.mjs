@@ -10,7 +10,7 @@ test("requestOptions requires an API key and reads the environment", () => {
   else process.env.OWM_API_KEY = oldKey;
 });
 
-test("requestOptions applies defaults and maps unit names", () => {
+test("requestOptions applies defaults", () => {
   const defaults = requestOptions({ apiKey: "test" });
   expect(defaults).toMatchObject({
     apiKey: "test",
@@ -21,20 +21,6 @@ test("requestOptions applies defaults and maps unit names", () => {
     throwOnError: false,
   });
   expect(defaults.now()).toEqual(expect.any(Number));
-  for (const [units, owmUnits] of [
-    ["C", "metric"],
-    ["F", "imperial"],
-    ["K", "standard"],
-    ["metric", "metric"],
-    ["imperial", "imperial"],
-    ["standard", "standard"],
-  ]) {
-    expect(requestOptions({ apiKey: "test", units }).owmUnits).toBe(owmUnits);
-  }
-});
-
-test("requestOptions rejects unsupported units", () => {
-  expect(() => requestOptions({ apiKey: "test", units: "invalid" })).toThrow("units");
 });
 
 test("requestOptions accepts zero timeout and retry values", () => {

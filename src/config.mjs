@@ -1,11 +1,4 @@
-const unitsMap = {
-  C: "metric",
-  F: "imperial",
-  K: "standard",
-  metric: "metric",
-  imperial: "imperial",
-  standard: "standard",
-};
+import { openWeatherUnits } from "./config/units.mjs";
 
 export function requestOptions(options) {
   const {
@@ -19,8 +12,7 @@ export function requestOptions(options) {
     logger,
   } = options ?? {};
   if (!apiKey) throw new Error("apiKey is required");
-  const owmUnits = unitsMap[units];
-  if (!owmUnits) throw new RangeError("units must be C, F, K, metric, imperial, or standard");
+  const owmUnits = openWeatherUnits(units);
   if (typeof fetchImpl !== "function") throw new TypeError("fetchImpl must be a function");
   if (!Number.isFinite(timeout) || timeout < 0)
     throw new RangeError("timeout must be a finite non-negative number");
